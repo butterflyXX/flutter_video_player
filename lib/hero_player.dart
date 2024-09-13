@@ -37,6 +37,11 @@ class _HeroPlayerState extends State<HeroPlayer> {
   void _listener() {
     position.value = widget.controller.controller.value.position;
     isPlaying.value = widget.controller.controller.value.isPlaying;
+    if (widget.controller.controller.value.isCompleted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        play();
+      });
+    }
   }
 
   show({bool? isShow}) {
