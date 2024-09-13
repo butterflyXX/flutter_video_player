@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_demo/global.dart';
@@ -18,26 +19,30 @@ class _HeroPlayerState extends State<HeroPlayer> {
   int flag = 0;
   final showControl = ValueNotifier(true);
   final position = ValueNotifier<Duration>(Duration.zero);
-  
+  final isPlaying = ValueNotifier(true);
+
   @override
   void initState() {
     widget.controller.controller.addListener(_listener);
+    show();
     super.initState();
   }
-
 
   @override
   void dispose() {
     widget.controller.controller.removeListener(_listener);
     super.dispose();
   }
-  
+
   void _listener() {
     position.value = widget.controller.controller.value.position;
+    isPlaying.value = widget.controller.controller.value.isPlaying;
   }
 
-  show() {
-    if (!showControl.value) {
+  show({bool? isShow}) {
+    final toShow = isShow ??= showControl.value;
+    flag++;
+    if (!toShow) {
       showControl.value = true;
       final tag = flag;
       Future.delayed(const Duration(seconds: 3)).then((_) {
@@ -47,7 +52,16 @@ class _HeroPlayerState extends State<HeroPlayer> {
       });
     } else {
       showControl.value = false;
-      flag++;
+    }
+  }
+
+  void play() async {
+    show(isShow: false);
+    isPlaying.value = !isPlaying.value;
+    if (isPlaying.value) {
+      await widget.controller.controller.play();
+    } else {
+      await widget.controller.controller.pause();
     }
   }
 
@@ -62,55 +76,74 @@ class _HeroPlayerState extends State<HeroPlayer> {
             color: Colors.black,
             child: Center(
               child: ValueListenableBuilder(
+              valueListenable: currentController,
+              builder: (_, current, child) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (current!.url == widget.controller.url) {
+                    widget.controller.controller.play();
+                  } else {
+                    widget.controller.controller.pause();
+                  }
+                });
+                return child!;
+              },
+              child: ValueListenableBuilder(
                 valueListenable: widget.controller.controller,
                 builder: (_, value, child) {
-                  if (value.isInitialized) {
-                    return ValueListenableBuilder(
-                      valueListenable: currentController,
-                      builder: (_, current, child) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (current!.url == widget.controller.url) {
-                            widget.controller.controller.play();
-                          } else {
-                            widget.controller.controller.pause();
-                          }
-                        });
-                        return child!;
-                      },
-                      child: AspectRatio(
-                        aspectRatio: value.aspectRatio,
-                        child: Hero(
-                          tag: widget.controller.url,
-                          child: VideoPlayer(widget.controller.controller),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(), // Displays the loading spinner
-                    );
-                  }
+                  return AspectRatio(
+                    aspectRatio: value.aspectRatio,
+                    child: Hero(
+                      tag: widget.controller.url,
+                      child: VideoPlayer(widget.controller.controller),
+                    ),
+                  );
                 },
               ),
+            ),
             ),
           ),
           Positioned.fill(
             child: ValueListenableBuilder(
               valueListenable: showControl,
-              builder: (context, value, child) {
+              builder: (context, show, child) {
                 return AnimatedOpacity(
-                  opacity: value ? 1 : 0,
+                  opacity: show ? 1 : 0,
                   duration: const Duration(milliseconds: 200),
-                  child: child!,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: IgnorePointer(
+                          ignoring: !show,
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: play,
+                              child: SizedBox(
+                                height: 80,
+                                width: 80,
+                                child: ValueListenableBuilder(
+                                  valueListenable: isPlaying,
+                                  builder: (_, value, __) {
+                                    if (value) {
+                                      return Image.asset("assets/images/ic_pause.png");
+                                    } else {
+                                      return Image.asset("assets/images/ic_play.png");
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      _progressBar(),
+                      SafeArea(
+                        child: SizedBox(),
+                      ),
+                    ],
+                  ),
                 );
               },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 300,),
-                  _progressBar(),
-                ],
-              ),
             ),
           ),
         ],
@@ -125,7 +158,7 @@ class _HeroPlayerState extends State<HeroPlayer> {
       child: ValueListenableBuilder(
         valueListenable: position,
         builder: (context, value, _) {
-          var ratio = value.inMilliseconds/widget.controller.controller.value.duration.inMilliseconds;
+          var ratio = value.inMilliseconds / widget.controller.controller.value.duration.inMilliseconds;
           if (widget.controller.controller.value.duration.inMilliseconds == 0) {
             ratio = 0;
           }
@@ -133,59 +166,57 @@ class _HeroPlayerState extends State<HeroPlayer> {
             children: [
               _timeItem(value),
               Expanded(
-                child: LayoutBuilder(
-                  builder: (context,constraints) {
-                    print(constraints);
-                    final width = constraints.maxWidth - tagSize;
-                    return SizedBox(
-                      height: tagSize,
-                      child: Stack(
-                        alignment: Alignment.centerLeft,
-                        children: [
-                          Positioned(
-                            left: tagSize/2,
-                            right: tagSize/2,
-                            child: Container(
-                              height: 2,
-                              decoration: ShapeDecoration(
-                                color: color.withOpacity(0.2),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  print(constraints);
+                  final width = constraints.maxWidth - tagSize;
+                  return SizedBox(
+                    height: tagSize,
+                    child: Stack(
+                      alignment: Alignment.centerLeft,
+                      children: [
+                        Positioned(
+                          left: tagSize / 2,
+                          right: tagSize / 2,
+                          child: Container(
+                            height: 2,
+                            decoration: ShapeDecoration(
+                              color: color.withOpacity(0.2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                           ),
-                          Positioned(
-                            left: tagSize/2,
-                            child: Container(
-                              width: ratio * width,
-                              height: 2,
-                              decoration: ShapeDecoration(
-                                color: color,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                        ),
+                        Positioned(
+                          left: tagSize / 2,
+                          child: Container(
+                            width: ratio * width,
+                            height: 2,
+                            decoration: ShapeDecoration(
+                              color: color,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                           ),
-                          Positioned(
-                            left: ratio * width,
-                            child: Container(
-                              width: tagSize,
-                              height: tagSize,
-                              decoration: BoxDecoration(
-                                color: color,
-                                borderRadius: BorderRadius.circular(tagSize/2),
-                              ),
+                        ),
+                        Positioned(
+                          left: ratio * width,
+                          child: Container(
+                            width: tagSize,
+                            height: tagSize,
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: BorderRadius.circular(tagSize / 2),
                             ),
                           ),
-                        ],
-                      ),
-                    );
-                  }
-                ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
               ),
-              _timeItem(widget.controller.controller.value.duration.inMilliseconds == 0 ? null:widget.controller.controller.value.duration),
+              _timeItem(widget.controller.controller.value.duration.inMilliseconds == 0 ? null : widget.controller.controller.value.duration),
             ],
           );
         },
@@ -194,7 +225,10 @@ class _HeroPlayerState extends State<HeroPlayer> {
   }
 
   Widget _timeItem(Duration? duration) {
-    return Text((duration == null)?"--:--:--":formatDuration(duration),style: TextStyle(color: color),);
+    return Text(
+      (duration == null) ? "--:--:--" : formatDuration(duration),
+      style: TextStyle(color: color),
+    );
   }
 
   String formatDuration(Duration duration) {
