@@ -13,6 +13,7 @@ class HeroPlayer extends StatefulWidget {
 }
 
 class _HeroPlayerState extends State<HeroPlayer> {
+  final color = const Color(0xFFFDFBFC);
 
   int flag = 0;
   final showControl = ValueNotifier(true);
@@ -85,7 +86,7 @@ class _HeroPlayerState extends State<HeroPlayer> {
                       ),
                     );
                   } else {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(), // Displays the loading spinner
                     );
                   }
@@ -99,14 +100,14 @@ class _HeroPlayerState extends State<HeroPlayer> {
               builder: (context, value, child) {
                 return AnimatedOpacity(
                   opacity: value ? 1 : 0,
-                  duration: Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 200),
                   child: child!,
                 );
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(height: 300,),
+                  const SizedBox(height: 300,),
                   _progressBar(),
                 ],
               ),
@@ -119,69 +120,91 @@ class _HeroPlayerState extends State<HeroPlayer> {
 
   Widget _progressBar() {
     const tagSize = 10.0;
-    const color = Color(0xFFFDFBFC);
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 6),
-      child: SizedBox(
-        height: tagSize,
-        child: ValueListenableBuilder(
-          valueListenable: position,
-          builder: (context, value, _) {
-            var ratio = value.inMilliseconds/widget.controller.controller.value.duration.inMilliseconds;
-            if (widget.controller.controller.value.duration.inMilliseconds == 0) {
-              ratio = 0;
-            }
-            return LayoutBuilder(
-              builder: (context,constraints) {
-                print(constraints);
-                final width = constraints.maxWidth - tagSize;
-                return Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Positioned(
-                      left: tagSize/2,
-                      right: tagSize/2,
-                      child: Container(
-                        height: 2,
-                        decoration: ShapeDecoration(
-                          color: color.withOpacity(0.2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      child: ValueListenableBuilder(
+        valueListenable: position,
+        builder: (context, value, _) {
+          var ratio = value.inMilliseconds/widget.controller.controller.value.duration.inMilliseconds;
+          if (widget.controller.controller.value.duration.inMilliseconds == 0) {
+            ratio = 0;
+          }
+          return Row(
+            children: [
+              _timeItem(value),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context,constraints) {
+                    print(constraints);
+                    final width = constraints.maxWidth - tagSize;
+                    return SizedBox(
+                      height: tagSize,
+                      child: Stack(
+                        alignment: Alignment.centerLeft,
+                        children: [
+                          Positioned(
+                            left: tagSize/2,
+                            right: tagSize/2,
+                            child: Container(
+                              height: 2,
+                              decoration: ShapeDecoration(
+                                color: color.withOpacity(0.2),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: tagSize/2,
-                      child: Container(
-                        width: ratio * width,
-                        height: 2,
-                        decoration: ShapeDecoration(
-                          color: color,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          Positioned(
+                            left: tagSize/2,
+                            child: Container(
+                              width: ratio * width,
+                              height: 2,
+                              decoration: ShapeDecoration(
+                                color: color,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          Positioned(
+                            left: ratio * width,
+                            child: Container(
+                              width: tagSize,
+                              height: tagSize,
+                              decoration: BoxDecoration(
+                                color: color,
+                                borderRadius: BorderRadius.circular(tagSize/2),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Positioned(
-                      left: ratio * width,
-                      child: Container(
-                        width: tagSize,
-                        height: tagSize,
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(tagSize/2),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
-            );
-          },
-        ),
+                    );
+                  }
+                ),
+              ),
+              _timeItem(widget.controller.controller.value.duration.inMilliseconds == 0 ? null:widget.controller.controller.value.duration),
+            ],
+          );
+        },
       ),
     );
+  }
+
+  Widget _timeItem(Duration? duration) {
+    return Text((duration == null)?"--:--:--":formatDuration(duration),style: TextStyle(color: color),);
+  }
+
+  String formatDuration(Duration duration) {
+    final int hours = duration.inHours;
+    final int minutes = duration.inMinutes % 60;
+    final int seconds = duration.inSeconds % 60;
+
+    final String hoursStr = hours.toString().padLeft(2, '0');
+    final String minutesStr = minutes.toString().padLeft(2, '0');
+    final String secondsStr = seconds.toString().padLeft(2, '0');
+    return '$hoursStr:$minutesStr:$secondsStr';
   }
 }
