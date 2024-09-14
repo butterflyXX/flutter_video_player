@@ -21,6 +21,10 @@ class _HeroPlayerState extends State<HeroPlayer> {
   final position = ValueNotifier<Duration>(Duration.zero);
   final isPlaying = ValueNotifier(true);
   var isDrag = false;
+  var base = 0.0;
+  int _task = 0;
+
+  double? offset;
 
   @override
   void initState() {
@@ -193,19 +197,28 @@ class _HeroPlayerState extends State<HeroPlayer> {
                     max: 1.0,
                     onChanged: (value) {
                       print("onChanged");
-                      final a = value * widget.controller.controller.value.duration.inMilliseconds;
+                      final a = getRealRatio(value) * widget.controller.controller.value.duration.inMilliseconds;
                       position.value = Duration(milliseconds: a.toInt());
                       show(isShow: false);
                       _listener();
+                      _task++;
                     },
                     onChangeStart: (value) {
                       print("onChangeStart");
+                      base = ratio;
                       isDrag = true;
                     },
                     onChangeEnd: (value) {
-                      final a = value * widget.controller.controller.value.duration.inMilliseconds;
+                      print("onChangeEnd");
+                      var ratio = getRealRatio(value);
+                      if (_task == 1) {
+                        ratio = value;
+                      }
+                      final a = ratio * widget.controller.controller.value.duration.inMilliseconds;
+                      _task = 0;
                       seekTo(Duration(milliseconds: a.toInt())).then((_) {
                         isDrag = false;
+                        offset = null;
                       });
                     },
                   ),
@@ -235,5 +248,13 @@ class _HeroPlayerState extends State<HeroPlayer> {
     final String minutesStr = minutes.toString().padLeft(2, '0');
     final String secondsStr = seconds.toString().padLeft(2, '0');
     return '$hoursStr:$minutesStr:$secondsStr';
+  }
+
+  double getRealRatio(double ratio) {
+    offset ??= ratio - base;
+    var realRatio = ratio - offset!;
+    if (realRatio < 0) realRatio = 0;
+    if (realRatio > 1) realRatio = 1;
+    return realRatio;
   }
 }
