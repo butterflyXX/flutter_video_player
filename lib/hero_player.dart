@@ -60,7 +60,7 @@ class _HeroPlayerState extends State<HeroPlayer> {
     }
   }
 
-  void play() async {
+  Future<void> play() async {
     show(isShow: false);
     isPlaying.value = !isPlaying.value;
     if (isPlaying.value) {
@@ -68,6 +68,10 @@ class _HeroPlayerState extends State<HeroPlayer> {
     } else {
       await widget.controller.controller.pause();
     }
+  }
+
+  Future<void> seekTo(Duration position) async {
+    widget.controller.controller.seekTo(position);
   }
 
   @override
