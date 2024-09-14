@@ -20,6 +20,7 @@ class _HeroPlayerState extends State<HeroPlayer> {
   final showControl = ValueNotifier(true);
   final position = ValueNotifier<Duration>(Duration.zero);
   final isPlaying = ValueNotifier(true);
+  var isDrag = false;
 
   @override
   void initState() {
@@ -35,7 +36,9 @@ class _HeroPlayerState extends State<HeroPlayer> {
   }
 
   void _listener() {
-    position.value = widget.controller.controller.value.position;
+    if (!isDrag) {
+      position.value = widget.controller.controller.value.position;
+    }
     isPlaying.value = widget.controller.controller.value.isPlaying;
     if (widget.controller.controller.value.isCompleted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -115,15 +118,15 @@ class _HeroPlayerState extends State<HeroPlayer> {
             child: ValueListenableBuilder(
               valueListenable: showControl,
               builder: (context, show, child) {
-                return AnimatedOpacity(
-                  opacity: show ? 1 : 0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: IgnorePointer(
-                          ignoring: !show,
+                return IgnorePointer(
+                  ignoring: !show,
+                  child: AnimatedOpacity(
+                    opacity: show ? 1 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
                           child: Center(
                             child: GestureDetector(
                               onTap: play,
@@ -144,12 +147,12 @@ class _HeroPlayerState extends State<HeroPlayer> {
                             ),
                           ),
                         ),
-                      ),
-                      _progressBar(),
-                      SafeArea(
-                        child: SizedBox(),
-                      ),
-                    ],
+                        _progressBar(),
+                        SafeArea(
+                          child: SizedBox(),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -161,7 +164,6 @@ class _HeroPlayerState extends State<HeroPlayer> {
   }
 
   Widget _progressBar() {
-    const tagSize = 10.0;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6),
       child: ValueListenableBuilder(
@@ -175,55 +177,38 @@ class _HeroPlayerState extends State<HeroPlayer> {
             children: [
               _timeItem(value),
               Expanded(
-                child: LayoutBuilder(builder: (context, constraints) {
-                  print(constraints);
-                  final width = constraints.maxWidth - tagSize;
-                  return SizedBox(
-                    height: tagSize,
-                    child: Stack(
-                      alignment: Alignment.centerLeft,
-                      children: [
-                        Positioned(
-                          left: tagSize / 2,
-                          right: tagSize / 2,
-                          child: Container(
-                            height: 2,
-                            decoration: ShapeDecoration(
-                              color: color.withOpacity(0.2),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          left: tagSize / 2,
-                          child: Container(
-                            width: ratio * width,
-                            height: 2,
-                            decoration: ShapeDecoration(
-                              color: color,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          left: ratio * width,
-                          child: Container(
-                            width: tagSize,
-                            height: tagSize,
-                            decoration: BoxDecoration(
-                              color: color,
-                              borderRadius: BorderRadius.circular(tagSize / 2),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+                child: SliderTheme(
+                  data: SliderThemeData(
+                    activeTrackColor: color, // 激活轨道颜色
+                    inactiveTrackColor: color.withOpacity(0.2), // 非激活轨道颜色
+                    thumbColor: color, // 滑块颜色
+                    overlayColor: color, // 滑块拖拽时的覆盖层颜色
+                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0), // 滑块形状
+                    trackHeight: 2, // 轨道高度
+                    overlayShape: RoundSliderOverlayShape(overlayRadius: 8),
+                  ),
+                  child: Slider(
+                    value: ratio,
+                    min: 0.0,
+                    max: 1.0,
+                    onChanged: (value) {
+                      print("onChanged");
+                      final a = value * widget.controller.controller.value.duration.inMilliseconds;
+                      position.value = Duration(milliseconds: a.toInt());
+                      show(isShow: false);
+                    },
+                    onChangeStart: (value) {
+                      print("onChangeStart");
+                      isDrag = true;
+                    },
+                    onChangeEnd: (value) {
+                      final a = value * widget.controller.controller.value.duration.inMilliseconds;
+                      seekTo(Duration(milliseconds: a.toInt())).then((_) {
+                        isDrag = false;
+                      });
+                    },
+                  ),
+                ),
               ),
               _timeItem(widget.controller.controller.value.duration.inMilliseconds == 0 ? null : widget.controller.controller.value.duration),
             ],
