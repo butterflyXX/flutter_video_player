@@ -38,8 +38,8 @@ class _HeroPlayerState extends State<HeroPlayer> {
   void _listener() {
     if (!isDrag) {
       position.value = widget.controller.controller.value.position;
+      isPlaying.value = widget.controller.controller.value.isPlaying;
     }
-    isPlaying.value = widget.controller.controller.value.isPlaying;
     if (widget.controller.controller.value.isCompleted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         widget.controller.controller.play();
@@ -196,6 +196,7 @@ class _HeroPlayerState extends State<HeroPlayer> {
                       final a = value * widget.controller.controller.value.duration.inMilliseconds;
                       position.value = Duration(milliseconds: a.toInt());
                       show(isShow: false);
+                      _listener();
                     },
                     onChangeStart: (value) {
                       print("onChangeStart");
