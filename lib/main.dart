@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
-import 'package:video_player_demo/detail_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player_demo/global.dart';
 import 'package:video_player_demo/hero_player.dart';
+import 'package:video_player_demo/video_controller.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -23,15 +23,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class VideoListPage extends StatefulWidget {
+class VideoListPage extends ConsumerStatefulWidget {
   const VideoListPage({Key? key}) : super(key: key);
 
   @override
   _VideoListPageState createState() => _VideoListPageState();
 }
 
-class _VideoListPageState extends State<VideoListPage> {
-  final controller = VideoController(maxCacheCount: 5);
+class _VideoListPageState extends ConsumerState<VideoListPage> {
   final pageController = PageController();
 
   final List<String> _videoUrls = [
@@ -51,6 +50,8 @@ class _VideoListPageState extends State<VideoListPage> {
     setData(0);
     super.initState();
   }
+
+  late VideoController controller = ref.read(controllerProvider);
 
   setData(int index) {
     final cache = getCacheList(index);
@@ -114,55 +115,5 @@ class _VideoListPageState extends State<VideoListPage> {
         onPageChanged: setData,
       ),
     );
-  }
-}
-
-class PlayerItem {
-  int cacheDate;
-  String url = '';
-  VideoPlayerController controller;
-  PlayerItem(this.url,{required this.controller, required this.cacheDate,});
-}
-
-class VideoController {
-  int maxCacheCount;
-  VideoController({this.maxCacheCount = 9});
-  final Map<String, PlayerItem> _controllers = {};
-  PlayerItem getItem(String url,{Duration? position, List<String>? cache}) {
-    final date = DateTime.now().millisecondsSinceEpoch;
-    PlayerItem item = cacheItem(url);
-    item.cacheDate = date;
-    if (position != null) {
-      item.controller.seekTo(position);
-    }
-    cache?.forEach((item) {
-      cacheItem(item);
-    });
-    //查看混存
-    checkCache();
-    return item;
-  }
-
-  PlayerItem cacheItem(String url) {
-    if (_controllers[url] != null) return _controllers[url]!;
-    VideoPlayerController controller = VideoPlayerController.networkUrl(Uri.parse(url));
-    controller.initialize();
-    _controllers[url] = PlayerItem(url, controller: controller, cacheDate: DateTime.now().millisecondsSinceEpoch);
-    return _controllers[url]!;
-  }
-
-  checkCache() {
-    if (_controllers.length > maxCacheCount) {
-      String? needDeleteItemKey;
-      for (final item in _controllers.entries) {
-        needDeleteItemKey ??= item.key;
-        if (_controllers[needDeleteItemKey]!.cacheDate > item.value.cacheDate) {
-          needDeleteItemKey = item.key;
-        }
-      }
-      print("删除 $needDeleteItemKey");
-      final item = _controllers.remove(needDeleteItemKey);
-      item?.controller.dispose();
-    }
   }
 }

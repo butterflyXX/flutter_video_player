@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   video_player: ^2.9.1
-  better_player: ^0.0.84
+  flutter_riverpod: ^2.5.1
 
 
 

@@ -1,19 +1,22 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_demo/global.dart';
 import 'package:video_player_demo/main.dart';
+import 'package:video_player_demo/player_item.dart';
+import 'package:video_player_demo/set_speed.dart';
 
-class HeroPlayer extends StatefulWidget {
+class HeroPlayer extends ConsumerStatefulWidget {
   final PlayerItem controller;
 
   const HeroPlayer({required this.controller, super.key});
 
   @override
-  State<HeroPlayer> createState() => _HeroPlayerState();
+  ConsumerState<HeroPlayer> createState() => _HeroPlayerState();
 }
 
-class _HeroPlayerState extends State<HeroPlayer> {
+class _HeroPlayerState extends ConsumerState<HeroPlayer> {
   final color = const Color(0xFFFDFBFC);
 
   int flag = 0;
@@ -92,30 +95,30 @@ class _HeroPlayerState extends State<HeroPlayer> {
             color: Colors.black,
             child: Center(
               child: ValueListenableBuilder(
-              valueListenable: currentController,
-              builder: (_, current, child) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (current!.url == widget.controller.url) {
-                    widget.controller.controller.play();
-                  } else {
-                    widget.controller.controller.pause();
-                  }
-                });
-                return child!;
-              },
-              child: ValueListenableBuilder(
-                valueListenable: widget.controller.controller,
-                builder: (_, value, child) {
-                  return AspectRatio(
-                    aspectRatio: value.aspectRatio,
-                    child: Hero(
-                      tag: widget.controller.url,
-                      child: VideoPlayer(widget.controller.controller),
-                    ),
-                  );
+                valueListenable: currentController,
+                builder: (_, current, child) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (current!.url == widget.controller.url) {
+                      widget.controller.controller.play();
+                    } else {
+                      widget.controller.controller.pause();
+                    }
+                  });
+                  return child!;
                 },
+                child: ValueListenableBuilder(
+                  valueListenable: widget.controller.controller,
+                  builder: (_, value, child) {
+                    return AspectRatio(
+                      aspectRatio: value.aspectRatio,
+                      child: Hero(
+                        tag: widget.controller.url,
+                        child: VideoPlayer(widget.controller.controller),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
             ),
           ),
           Positioned.fill(
@@ -151,6 +154,36 @@ class _HeroPlayerState extends State<HeroPlayer> {
                             ),
                           ),
                         ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ValueListenableBuilder(valueListenable: ref.read(controllerProvider).speed, builder: (context, value, child) {
+                              return IconButton(
+                                onPressed: () async {
+                                  final speed = await showModalBottomSheet(context: context, builder: (context) {
+                                    return SetSpeedWidget(selected: 1,onTap: (newSpeed) {
+                                      Navigator.of(context).pop(newSpeed);
+                                    },);
+                                  });
+                                  if (speed != null && ref.read(controllerProvider).speed != speed) {
+                                    ref.read(controllerProvider).setSpeed(speed);
+                                  }
+                                },
+                                icon: Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Colors.white,
+                                  ),
+                                  child: Center(
+                                    child: Text(value.toString()),
+                                  ),
+                                ),
+                              );
+                            })
+                          ],
+                        ),
                         _progressBar(),
                         SafeArea(
                           child: SizedBox(),
@@ -174,7 +207,7 @@ class _HeroPlayerState extends State<HeroPlayer> {
         valueListenable: position,
         builder: (context, value, _) {
           var ratio = value.inMilliseconds / widget.controller.controller.value.duration.inMilliseconds;
-          if (widget.controller.controller.value.duration.inMilliseconds == 0) {
+          if (widget.controller.controller.value.duration.inMilliseconds == 0 || ratio < 0) {
             ratio = 0;
           }
           return Row(
@@ -183,12 +216,18 @@ class _HeroPlayerState extends State<HeroPlayer> {
               Expanded(
                 child: SliderTheme(
                   data: SliderThemeData(
-                    activeTrackColor: color, // 激活轨道颜色
-                    inactiveTrackColor: color.withOpacity(0.2), // 非激活轨道颜色
-                    thumbColor: color, // 滑块颜色
-                    overlayColor: color, // 滑块拖拽时的覆盖层颜色
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0), // 滑块形状
-                    trackHeight: 2, // 轨道高度
+                    activeTrackColor: color,
+                    // 激活轨道颜色
+                    inactiveTrackColor: color.withOpacity(0.2),
+                    // 非激活轨道颜色
+                    thumbColor: color,
+                    // 滑块颜色
+                    overlayColor: color,
+                    // 滑块拖拽时的覆盖层颜色
+                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                    // 滑块形状
+                    trackHeight: 2,
+                    // 轨道高度
                     overlayShape: RoundSliderOverlayShape(overlayRadius: 8),
                   ),
                   child: Slider(
