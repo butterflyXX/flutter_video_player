@@ -26,6 +26,7 @@ class PlayerController {
     if (_controllers[url] != null) return _controllers[url]!;
     VideoPlayerController controller = VideoPlayerController.networkUrl(Uri.parse(url));
     controller.initialize();
+    controller.setLooping(true);
     _controllers[url] = PlayerItem(url, controller: controller, cacheDate: DateTime.now().millisecondsSinceEpoch);
     setSpeed(speed.value);
     return _controllers[url]!;

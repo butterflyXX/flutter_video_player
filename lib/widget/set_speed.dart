@@ -19,7 +19,7 @@ class SetSpeedWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
           ...List.generate(_list.length, (index) {
             return GestureDetector(
               onTap: () {
@@ -28,7 +28,7 @@ class SetSpeedWidget extends StatelessWidget {
               child: SizedBox(
                 height: 40,
                 child: Text(
-                  _list[index].toString(),
+                  '${_list[index].toString()}x',
                 ),
               ),
             );

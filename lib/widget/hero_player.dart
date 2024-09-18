@@ -18,7 +18,6 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
   final color = const Color(0xFFFDFBFC);
 
   int flag = 0;
-  final showControl = ValueNotifier(true);
   final position = ValueNotifier<Duration>(Duration.zero);
   final isPlaying = ValueNotifier(true);
   var isDrag = false;
@@ -30,7 +29,6 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
   @override
   void initState() {
     widget.controller.controller.addListener(_listener);
-    show();
     super.initState();
   }
 
@@ -45,31 +43,9 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
       position.value = widget.controller.controller.value.position;
       isPlaying.value = widget.controller.controller.value.isPlaying;
     }
-    if (widget.controller.controller.value.isCompleted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.controller.controller.play();
-      });
-    }
-  }
-
-  show({bool? isShow, bool autoDismiss = true}) {
-    final toShow = isShow ??= showControl.value;
-    flag++;
-    if (!toShow) {
-      showControl.value = true;
-      final tag = flag;
-      if (autoDismiss) {
-        Future.delayed(const Duration(seconds: 3)).then((_) {
-          if (showControl.value && tag == flag) show();
-        });
-      }
-    } else {
-      showControl.value = false;
-    }
   }
 
   Future<void> play() async {
-    show(isShow: false);
     isPlaying.value = !isPlaying.value;
     if (isPlaying.value) {
       await widget.controller.controller.play();
@@ -85,7 +61,7 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: show,
+      onTap: play,
       child: Stack(
         children: [
           Container(
@@ -120,51 +96,36 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
             ),
           ),
           Positioned.fill(
-            child: ValueListenableBuilder(
-              valueListenable: showControl,
-              builder: (context, show, child) {
-                final child = IgnorePointer(
-                  ignoring: !show,
-                  child: AnimatedOpacity(
-                    opacity: show ? 1 : 0,
-                    duration: const Duration(milliseconds: 200),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: Consumer(
+              builder: (context, ref, child) {
+                final scrolling = ref.watch(isScrollProvider);
+                return Opacity(
+                  opacity: scrolling ? 0.3 : 1,
+                  child: child!,
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SafeArea(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Expanded(
-                          child: Center(
-                            child: GestureDetector(
-                              onTap: play,
-                              child: SizedBox(
-                                height: 80,
-                                width: 80,
-                                child: ValueListenableBuilder(
-                                  valueListenable: isPlaying,
-                                  builder: (_, value, __) {
-                                    if (value) {
-                                      return Image.asset("assets/images/ic_pause.png");
-                                    } else {
-                                      return Image.asset("assets/images/ic_play.png");
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            ValueListenableBuilder(valueListenable: ref.read(controllerProvider).speed, builder: (context, value, child) {
+                        ValueListenableBuilder(
+                            valueListenable: ref.read(controllerProvider).speed,
+                            builder: (context, value, child) {
                               return IconButton(
                                 onPressed: () async {
-                                  this.show(isShow: false, autoDismiss: false);
-                                  final speed = await showModalBottomSheet(context: context, builder: (context) {
-                                    return SetSpeedWidget(selected: 1,onTap: (newSpeed) {
-                                      Navigator.of(context).pop(newSpeed);
-                                    },);
-                                  });
-                                  this.show(isShow: false);
+                                  final speed = await showModalBottomSheet(
+                                      context: context,
+                                      builder: (context) {
+                                        return SetSpeedWidget(
+                                          selected: 1,
+                                          onTap: (newSpeed) {
+                                            Navigator.of(context).pop(newSpeed);
+                                          },
+                                        );
+                                      });
                                   if (speed != null && ref.read(controllerProvider).speed != speed) {
                                     ref.read(controllerProvider).setSpeed(speed);
                                   }
@@ -177,32 +138,44 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
                                     color: Colors.white,
                                   ),
                                   child: Center(
-                                    child: Text(value.toString()),
+                                    child: Text('${value.toString()}x'),
                                   ),
                                 ),
                               );
                             })
-                          ],
-                        ),
-                        _progressBar(),
-                        SafeArea(
-                          child: SizedBox(),
-                        ),
                       ],
                     ),
                   ),
-                );
-                return Consumer(
-                  builder: (context, ref, child) {
-                    final scrolling = ref.watch(isScrollProvider);
-                    return Opacity(
-                      opacity: scrolling?0.3:1,
-                      child: child!,
-                    );
-                  },
-                  child: child,
-                );
-              },
+                  Expanded(
+                    child: ValueListenableBuilder(
+                      valueListenable: isPlaying,
+                      builder: (context, value, child) {
+                        return Opacity(opacity: value?0:1,child: child!,);
+                      },
+                      child: Center(
+                        child: SizedBox(
+                          height: 80,
+                          width: 80,
+                          child: ValueListenableBuilder(
+                            valueListenable: isPlaying,
+                            builder: (_, value, __) {
+                              if (value) {
+                                return Image.asset("assets/images/ic_pause.png");
+                              } else {
+                                return Image.asset("assets/images/ic_play.png");
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  _progressBar(),
+                  const SafeArea(
+                    child: SizedBox(),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -234,11 +207,11 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
                     // 滑块颜色
                     overlayColor: color,
                     // 滑块拖拽时的覆盖层颜色
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 4.0),
                     // 滑块形状
                     trackHeight: 2,
                     // 轨道高度
-                    overlayShape: RoundSliderOverlayShape(overlayRadius: 8),
+                    overlayShape: const RoundSliderOverlayShape(overlayRadius: 8),
                   ),
                   child: Slider(
                     value: ratio,
@@ -248,7 +221,6 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
                       print("onChanged");
                       final a = getRealRatio(value) * widget.controller.controller.value.duration.inMilliseconds;
                       position.value = Duration(milliseconds: a.toInt());
-                      show(isShow: false);
                       _listener();
                       _task++;
                     },
