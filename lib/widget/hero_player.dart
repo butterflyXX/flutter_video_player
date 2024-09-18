@@ -52,7 +52,7 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
     }
   }
 
-  show({bool? isShow,bool autoDismiss = true}) {
+  show({bool? isShow, bool autoDismiss = true}) {
     final toShow = isShow ??= showControl.value;
     flag++;
     if (!toShow) {
@@ -123,7 +123,7 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
             child: ValueListenableBuilder(
               valueListenable: showControl,
               builder: (context, show, child) {
-                return IgnorePointer(
+                final child = IgnorePointer(
                   ignoring: !show,
                   child: AnimatedOpacity(
                     opacity: show ? 1 : 0,
@@ -191,6 +191,16 @@ class _HeroPlayerState extends ConsumerState<HeroPlayer> {
                       ],
                     ),
                   ),
+                );
+                return Consumer(
+                  builder: (context, ref, child) {
+                    final scrolling = ref.watch(isScrollProvider);
+                    return Opacity(
+                      opacity: scrolling?0.3:1,
+                      child: child!,
+                    );
+                  },
+                  child: child,
                 );
               },
             ),

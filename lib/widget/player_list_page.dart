@@ -29,6 +29,9 @@ class _VideoListPageState extends ConsumerState<PlayerListPage> {
   @override
   void initState() {
     setData(0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      pageController.position.isScrollingNotifier.addListener(_onScroll);
+    });
     super.initState();
   }
 
@@ -42,16 +45,14 @@ class _VideoListPageState extends ConsumerState<PlayerListPage> {
 
   @override
   void dispose() {
+    pageController.position.isScrollingNotifier.removeListener(_onScroll);
+    pageController.dispose();
     super.dispose();
   }
-  //
-  // void _checkPlaybackState(PlayerItem item) {
-  //   // print("isBuffering ${item.index} ${item.controller?.value.isBuffering}");
-  //   if (item.index == 2 && item.controller?.value.buffered.isNotEmpty == true) {
-  //     final list = item.controller?.value.buffered.last;
-  //     print("${item.index} isBuffering ${list?.end} ${item.controller?.value.isInitialized} ${item.controller?.value.position}");
-  //   }
-  // }
+
+  void _onScroll() {
+    ref.read(isScrollProvider.notifier).state = pageController.position.isScrollingNotifier.value;
+  }
 
   List<String> getCacheList(int index) {
     if (index == 0) {
