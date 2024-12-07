@@ -1,4 +1,4 @@
-name: flutter_video_player
+name: video_player
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -31,8 +31,12 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
-  video_player: ^2.9.1
+  super_player:
+    git:
+      url: https://github.com/LiteAVSDK/Player_Flutter
+      path: Flutter
   flutter_riverpod: ^2.5.1
+  screenshot: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -56,8 +60,6 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  assets:
-    - assets/images/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

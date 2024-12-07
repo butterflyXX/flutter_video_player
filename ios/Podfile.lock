@@ -1,23 +1,29 @@
 PODS:
   - Flutter (1.0.0)
-  - video_player_avfoundation (0.0.1):
+  - super_player (12.2.0):
     - Flutter
-    - FlutterMacOS
+    - TXLiteAVSDK_Player (= 12.2.16945)
+  - TXLiteAVSDK_Player (12.2.16945)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
+  - super_player (from `.symlinks/plugins/super_player/ios`)
+
+SPEC REPOS:
+  trunk:
+    - TXLiteAVSDK_Player
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  video_player_avfoundation:
-    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
+  super_player:
+    :path: ".symlinks/plugins/super_player/ios"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
+  super_player: e7f1c8169927d5a9c720d7f1f56f95ee11854e03
+  TXLiteAVSDK_Player: 87ced214e008f6e62fcfd794ddbaa23a86a2893b
 
-PODFILE CHECKSUM: 6e700dec67e6deac9b1c69bb14c49a2217a12d15
+PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
