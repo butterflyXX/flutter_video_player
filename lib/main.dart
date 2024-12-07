@@ -10,7 +10,10 @@ void main() async {
   String licenceURL = "https://license.vod2.myqcloud.com/license/v2/1311477396_1/v_cube.license"; // 获取到的 licence url
   String licenceKey = "616d85285280f69e09ccd76bb05f2394"; // 获取到的 licence key
   await SuperPlayerPlugin.setGlobalLicense(licenceURL, licenceKey);
-  VideoControl.initialize(maxCacheCount: 9);
+  SuperPlayerPlugin.setLogLevel(6);
+  SuperPlayerPlugin.setConsoleEnabled(false);
+  VideoControl.initialize(maxCacheCount: 5);
+  
   runApp(const ProviderScope(child: MyApp()));
 }
 

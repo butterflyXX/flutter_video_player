@@ -31,10 +31,12 @@ class VideoControl {
   final Map<String, VideoPlayerController> _controllers = {};
 
   VideoPlayerController cacheItem(String url) {
-    if (_controllers[url] != null) return _controllers[url]!;
-    checkCache();
-    final controller = _inflateController(url);
-    _controllers[url] = controller..cacheDate = DateTime.now().millisecondsSinceEpoch;
+    if (_controllers[url] == null) {
+      checkCache();
+      final controller = _inflateController(url);
+      _controllers[url] = controller;
+    }
+    _controllers[url]!.cacheDate = DateTime.now().millisecondsSinceEpoch;
     setSpeed(speed.value);
     return _controllers[url]!;
   }

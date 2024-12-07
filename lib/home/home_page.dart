@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageView.builder(
+        allowImplicitScrolling: true,
         controller: pageController,
         scrollDirection: Axis.vertical,
         itemCount: urls.length,

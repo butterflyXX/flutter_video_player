@@ -74,6 +74,7 @@ class _HomePageState extends State<DetailPage> {
           Scaffold(
             backgroundColor: Colors.black,
             body: PageView.builder(
+              allowImplicitScrolling: true,
               controller: pageController,
               scrollDirection: Axis.vertical,
               itemCount: urls.length,
