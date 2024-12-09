@@ -84,39 +84,41 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
 
   @override
   void didPopNext() {
-    if (controller.currentController?.playState != TXPlayerState.playing) {
-      subController.currentController?.let((it) async {
-        await it.pause();
-        it.position.value?.let((position) => controller.currentController?.seek(position));
-        subController.clearExcept(it);
-      });
+    subController.currentController?.let((it) async {
+      await it.pause();
+      await it.position.value?.let((position) async => await controller.currentController?.seek(position));
       controller.currentController?.resume();
-    }
+      subController.clearExcept(it);
+    });
   }
 
   @override
   void didPushNext() {
-    controller.currentController?.pause();
-  }
-
-  @override
-  void willPopFromNext() {
-    subController.currentController?.let((it) async {
-      await it.pause();
-      it.position.value?.let((position) => controller.currentController?.seek(position));
-      subController.clearExcept(it);
-    });
-    controller.currentController?.resume();
-    super.willPopFromNext();
-  }
-
-  @override
-  void cancelPopFromNext() {
     controller.currentController?.let((it) async {
       await it.pause();
-      it.position.value?.let((position) => subController.currentController?.seek(position));
+      await it.position.value?.let((position) async => await subController.currentController?.seek(position));
+      subController.currentController?.resume();
     });
-    subController.currentController?.resume();
-    super.cancelPopFromNext();
   }
+
+  // @override
+  // void willPopFromNext() {
+  //   subController.currentController?.let((it) async {
+  //     await it.pause();
+  //     it.position.value?.let((position) => controller.currentController?.seek(position));
+  //     subController.clearExcept(it);
+  //   });
+  //   controller.currentController?.resume();
+  //   super.willPopFromNext();
+  // }
+  //
+  // @override
+  // void cancelPopFromNext() {
+  //   controller.currentController?.let((it) async {
+  //     await it.pause();
+  //     it.position.value?.let((position) => subController.currentController?.seek(position));
+  //   });
+  //   subController.currentController?.resume();
+  //   super.cancelPopFromNext();
+  // }
 }
