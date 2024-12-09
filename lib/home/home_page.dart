@@ -14,39 +14,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final pageController = PageController();
 
-  setData(int index) {
-    VideoControl.instance.currentController?.pause();
-    final cache = getCacheList(index);
-    for (var item in cache) {
-      VideoControl.instance.cacheItem(item);
-    }
-    VideoControl.instance.currentController = VideoControl.instance.cacheItem(urls[index]);
-    VideoControl.instance.currentController?.waitCanResume().then((_) {
-      VideoControl.instance.currentController?.resume();
-    });
-  }
-
-  List<String> getCacheList(int index) {
-    if (index == 0) {
-      return urls.take(3).toList();
-    } else if (index == 1) {
-      return urls.take(4).toList();
-    } else {
-      final list = [urls[index - 2], urls[index - 1], urls[index]];
-      if (index + 1 < urls.length) {
-        list.add(urls[index + 1]);
-      }
-      if (index + 2 < urls.length) {
-        list.add(urls[index + 2]);
-      }
-      return list;
-    }
-  }
-
   @override
   void initState() {
-    setData(0);
+    setCurrentVideoPlayerController(0);
     super.initState();
+  }
+
+  void setCurrentVideoPlayerController(index) {
+    final url = urls[index];
+    final current = VideoControl.instance.cacheItem(url);
+    VideoControl.instance.setCurrentVideoPlayerController(current);
   }
 
   @override
@@ -71,7 +48,7 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
-        onPageChanged: setData,
+        onPageChanged: setCurrentVideoPlayerController,
       ),
     );
   }

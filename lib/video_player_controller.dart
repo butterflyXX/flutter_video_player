@@ -24,15 +24,38 @@ class VideoPlayerController extends TXVodPlayerController {
   }
 
   VideoPlayerController() {
-    _subscription = onPlayerNetStatusBroadcast.listen((event) async {
-      double w = (event["VIDEO_WIDTH"]).toDouble();
-      double h = (event["VIDEO_HEIGHT"]).toDouble();
-      if (w > 0 && h > 0) {
-        print('111111111');
+    _subscription = onPlayerEventBroadcast.listen((event) async {
+      // print('2222${event}');
+      if(event["event"] == TXVodPlayEvent.PLAY_EVT_VOD_PLAY_PREPARED) {
+        //加载完毕,可以执行播放或者暂停
+        if (!_canResume) {
+          _canResume = true;
+          _initializeCompleter.complete();
+        }
+      }
+
+      if(event["event"] == TXVodPlayEvent.PLAY_EVT_CHANGE_RESOLUTION) {
+        //分辨率获取,获取完分辨率展示播放器UI
+        double w = (event["EVT_PARAM1"]).toDouble();
+        double h = (event["EVT_PARAM2"]).toDouble();
         if (aspectRatio.value == 0) {
           aspectRatio.value = 1.0 * w / h;
         }
       }
+
+      if(event["event"] == TXVodPlayEvent.PLAY_EVT_PLAY_PROGRESS) {
+        //播放进度
+
+        // 播放位置 单位s
+        final position = (event['EVT_PLAY_PROGRESS'] * 1000).round;
+
+        // 视频可播放时长 单位s
+        final duration = (event['PLAYABLE_DURATION'] * 1000).round;
+
+        // 视频总时长 单位s
+        final allDuration = (event['EVT_PLAY_DURATION'] * 1000).round;
+      }
+
     });
   }
 
@@ -40,8 +63,6 @@ class VideoPlayerController extends TXVodPlayerController {
   Future<bool> startVodPlay(String url) async {
     this.url = url;
     final res = await super.startVodPlay(url);
-    _canResume = true;
-    _initializeCompleter.complete();
     return res;
   }
 

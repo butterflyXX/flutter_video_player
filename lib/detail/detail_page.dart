@@ -24,18 +24,6 @@ class _HomePageState extends State<DetailPage> {
 
   final imageData = ValueNotifier<Uint8List?>(null);
 
-  setData(int index, {bool needPauseLast = true}) {
-    VideoControl.instance.currentController?.pause();
-    final cache = getCacheList(index);
-    for (var item in cache) {
-      VideoControl.instance.cacheItem(item);
-    }
-    VideoControl.instance.currentController = VideoControl.instance.cacheItem(urls[index]);
-    VideoControl.instance.currentController?.waitCanResume().then((_) {
-      VideoControl.instance.currentController?.resume();
-    });
-  }
-
   List<String> getCacheList(int index) {
     if (index == 0) {
       return urls.take(3).toList();
@@ -60,7 +48,6 @@ class _HomePageState extends State<DetailPage> {
       index = urls.indexOf(widget.initialUrl!);
     }
     pageController = PageController(initialPage: index);
-    setData(index, needPauseLast: false);
     super.initState();
   }
 
@@ -91,7 +78,6 @@ class _HomePageState extends State<DetailPage> {
                   ),
                 );
               },
-              onPageChanged: setData,
             ),
           ),
         ],

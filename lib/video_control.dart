@@ -30,6 +30,13 @@ class VideoControl {
 
   final Map<String, VideoPlayerController> _controllers = {};
 
+  setCurrentVideoPlayerController(VideoPlayerController controller) async {
+    await currentController?.pause();
+    currentController = controller;
+    await controller.waitCanResume();
+    if (currentController == controller) controller.resume();
+  }
+
   VideoPlayerController cacheItem(String url) {
     if (_controllers[url] == null) {
       checkCache();
@@ -50,7 +57,6 @@ class VideoControl {
           needDeleteItemKey = item.key;
         }
       }
-      print("删除 $needDeleteItemKey");
       final item = _controllers.remove(needDeleteItemKey);
       item?.dispose();
     }
