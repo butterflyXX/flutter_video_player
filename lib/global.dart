@@ -41,12 +41,6 @@ class HomeVideoNotifier extends Notifier<bool> {
 
   @override
   bool build() {
-    ref.listen(positionProvider, (previous, next) {
-      if (listController.currentController?.position.value != next.controller?.position.value) {
-        print("首页视频seek");
-        listController.currentController?.seek(next.controller!.position.value!);
-      }
-    });
     return true;
   }
 }
@@ -59,12 +53,6 @@ class SubVideoNotifier extends Notifier<bool> {
   @override
   bool build() {
     listController = VideoListController();
-    ref.listen(positionProvider, (previous, next) {
-      final controller = listController.getControllerIfHave(next.controller!.url!);
-      if (controller?.position.value != next.controller?.position.value) {
-        controller?.seek(next.controller!.position.value!);
-      }
-    });
     return true;
   }
 }

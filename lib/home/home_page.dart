@@ -1,6 +1,7 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:super_player/super_player.dart';
 import 'package:video_player/detail/detail_page.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/my_navigator_observer.dart';
@@ -83,16 +84,39 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
 
   @override
   void didPopNext() {
+    if (controller.currentController?.playState != TXPlayerState.playing) {
+      subController.currentController?.let((it) async {
+        await it.pause();
+        it.position.value?.let((position) => controller.currentController?.seek(position));
+        subController.clearExcept(it);
+      });
+      controller.currentController?.resume();
+    }
+  }
+
+  @override
+  void didPushNext() {
+    controller.currentController?.pause();
+  }
+
+  @override
+  void willPopFromNext() {
     subController.currentController?.let((it) async {
       await it.pause();
       it.position.value?.let((position) => controller.currentController?.seek(position));
       subController.clearExcept(it);
     });
     controller.currentController?.resume();
+    super.willPopFromNext();
   }
 
   @override
-  void didPushNext() {
-    controller.currentController?.pause();
+  void cancelPopFromNext() {
+    controller.currentController?.let((it) async {
+      await it.pause();
+      it.position.value?.let((position) => subController.currentController?.seek(position));
+    });
+    subController.currentController?.resume();
+    super.cancelPopFromNext();
   }
 }
