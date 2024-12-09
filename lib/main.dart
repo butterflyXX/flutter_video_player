@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_player/super_player.dart';
 import 'package:video_player/home/home_page.dart';
-import 'package:video_player/video_control.dart';
 import 'package:video_player/widget/buffering_widget.dart';
 
 void main() async {
@@ -12,7 +11,6 @@ void main() async {
   await SuperPlayerPlugin.setGlobalLicense(licenceURL, licenceKey);
   SuperPlayerPlugin.setLogLevel(6);
   SuperPlayerPlugin.setConsoleEnabled(false);
-  VideoControl.initialize(maxCacheCount: 5);
   
   runApp(const ProviderScope(child: MyApp()));
 }

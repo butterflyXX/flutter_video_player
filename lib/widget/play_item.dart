@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:super_player/super_player.dart';
+import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/video_player_controller.dart';
 import 'package:video_player/widget/buffering_widget.dart';
 
 class PlayItem extends StatefulWidget {
-  final VideoPlayerController controller;
+  final String url;
+  final VideoListController listController;
 
   const PlayItem({
-    required this.controller,
+    required this.url,
+    required this.listController,
     super.key,
   });
 
@@ -16,10 +19,17 @@ class PlayItem extends StatefulWidget {
 }
 
 class _PlayItemState extends State<PlayItem> {
+  late final controller = widget.listController.getController(widget.url);
+
+  @override
+  void dispose() {
+    widget.listController.updateCache(controller);
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: widget.controller.aspectRatio,
+      valueListenable: controller.aspectRatio,
       builder: (context, aspectRatio, child) {
         if (aspectRatio != 0) {
           return Stack(
@@ -27,8 +37,22 @@ class _PlayItemState extends State<PlayItem> {
               Center(
                 child: AspectRatio(
                   aspectRatio: aspectRatio,
-                  child: TXPlayerVideo(controller: widget.controller),
+                  child: TXPlayerVideo(controller: controller),
                 ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(onPressed: (){
+                    controller.pause();
+                  }, icon: Icon(Icons.pause)),
+                  IconButton(onPressed: (){
+                    controller.resume();
+                  }, icon: Icon(Icons.play_arrow)),
+                  const SizedBox(
+                    height: 100,
+                  ),
+                ],
               ),
             ],
           );
@@ -38,7 +62,7 @@ class _PlayItemState extends State<PlayItem> {
             children: [
               FloatingActionButton(
                 onPressed: () {
-                  widget.controller.resume();
+                  controller.resume();
                 },
               ),
               child!,

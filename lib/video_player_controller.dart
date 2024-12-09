@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:super_player/super_player.dart';
 
 class VideoPlayerController extends TXVodPlayerController {
-  int cacheDate = 0;
   double rate = 1;
   String? url;
   final aspectRatio = ValueNotifier<double>(0);
@@ -25,7 +24,6 @@ class VideoPlayerController extends TXVodPlayerController {
 
   VideoPlayerController() {
     _subscription = onPlayerEventBroadcast.listen((event) async {
-      // print('2222${event}');
       if(event["event"] == TXVodPlayEvent.PLAY_EVT_VOD_PLAY_PREPARED) {
         //加载完毕,可以执行播放或者暂停
         if (!_canResume) {

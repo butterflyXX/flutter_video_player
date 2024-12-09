@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/detail/detail_page.dart';
 import 'package:video_player/source.dart';
-import 'package:video_player/video_control.dart';
+import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/widget/play_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,7 +12,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final pageController = PageController();
+  final _pageController = PageController();
+  final _videoListController = VideoListController();
 
   @override
   void initState() {
@@ -22,8 +23,8 @@ class _HomePageState extends State<HomePage> {
 
   void setCurrentVideoPlayerController(index) {
     final url = urls[index];
-    final current = VideoControl.instance.cacheItem(url);
-    VideoControl.instance.setCurrentVideoPlayerController(current);
+    final current = _videoListController.getController(url);
+    _videoListController.setCurrentVideoPlayerController(current);
   }
 
   @override
@@ -32,19 +33,20 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.black,
       body: PageView.builder(
         allowImplicitScrolling: true,
-        controller: pageController,
+        controller: _pageController,
         scrollDirection: Axis.vertical,
         itemCount: urls.length,
         itemBuilder: (context, index) {
           final url = urls[index];
           return GestureDetector(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                return DetailPage(initialUrl: url,);
-              }));
+              // Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+              //   return DetailPage(initialUrl: url,);
+              // }));
             },
             child: PlayItem(
-              controller: VideoControl.instance.cacheItem(url),
+              listController: _videoListController,
+              url: url,
             ),
           );
         },
