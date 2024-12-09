@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:super_player/super_player.dart';
+import 'package:video_player/global.dart';
 
 class VideoPlayerController extends TXVodPlayerController {
   double rate = 1;
@@ -9,6 +11,8 @@ class VideoPlayerController extends TXVodPlayerController {
   final aspectRatio = ValueNotifier<double>(0);
   bool _canResume = false;
   final _initializeCompleter = Completer();
+
+  final position = ValueNotifier<double?>(null);
 
   StreamSubscription? _subscription;
 
@@ -45,7 +49,9 @@ class VideoPlayerController extends TXVodPlayerController {
         //播放进度
 
         // 播放位置 单位s
-        final position = (event['EVT_PLAY_PROGRESS'] * 1000).round;
+        position.value = event['EVT_PLAY_PROGRESS'];
+
+        readProvider(positionProvider.notifier).update(controller: this);
 
         // 视频可播放时长 单位s
         final duration = (event['PLAYABLE_DURATION'] * 1000).round;

@@ -23,7 +23,7 @@ class _PlayItemState extends State<PlayItem> {
 
   @override
   void dispose() {
-    widget.listController.updateCache(controller);
+    widget.listController.disposeCache(controller);
     super.dispose();
   }
   @override

@@ -50,3 +50,13 @@ const urls = [
   "https://video-v1.mydramawave.com/vt/video/convert-test/VBxKk5xjde_b88cca26-01f7-43a0-a47b-ce52c60c9c8d/h264/master.m3u8",
   "https://video-v1.mydramawave.com/vt/video/convert-test/yvNLFB0bvw_64ccdd60-98e0-4505-acd4-685a1ce61ba3/h264/master.m3u8",
 ];
+
+final data = [
+  GroupModel('a', 'https://video-v1.mydramawave.com/vt/video/convert-test/0PC9WOSurs_73809ad2-07c5-4ff6-bd9d-7c58ef6a7c86/h264/master.m3u8'),
+];
+
+class GroupModel {
+  String groupId;
+  String currentUrl;
+  GroupModel(this.groupId, this.currentUrl);
+}

@@ -39,7 +39,11 @@ class VideoListController {
     return _controllers[url]!;
   }
 
-  updateCache(VideoPlayerController controller) {
+  VideoPlayerController? getControllerIfHave(String url) {
+    return _controllers[url];
+  }
+
+  disposeCache(VideoPlayerController controller) {
     if (_controllers.length > maxCacheCount) {
       _controllers.remove(controller.url);
       controller.dispose();

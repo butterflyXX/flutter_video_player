@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_player/super_player.dart';
+import 'package:video_player/global.dart';
 import 'package:video_player/home/home_page.dart';
 import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/widget/buffering_widget.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    baseContext = context;
     return MaterialApp(
       title: 'Flutter Video List Demo',
       theme: ThemeData(

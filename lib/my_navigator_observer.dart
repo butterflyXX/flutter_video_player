@@ -28,9 +28,7 @@ class TGRouteObserver<R extends Route<dynamic>?> extends NavigatorObserver {
   void subscribe(TGRouteAware routeAware, R route) {
     assert(route != null);
     final Set<TGRouteAware> subscribers = _listeners.putIfAbsent(route, () => <TGRouteAware>{});
-    if (subscribers.add(routeAware)) {
-      routeAware.didPush();
-    }
+    subscribers.add(routeAware);
   }
 
   /// Unsubscribe [routeAware].
@@ -61,14 +59,6 @@ class TGRouteObserver<R extends Route<dynamic>?> extends NavigatorObserver {
           routeAware.didPopNext();
         }
       }
-
-      final List<TGRouteAware>? subscribers = _listeners[route as R]?.toList();
-
-      if (subscribers != null) {
-        for (final TGRouteAware routeAware in subscribers) {
-          routeAware.didPop();
-        }
-      }
       currentPage = previousRoute?.settings.name;
       previousPage = route.settings.name;
     }
@@ -92,18 +82,8 @@ class TGRouteObserver<R extends Route<dynamic>?> extends NavigatorObserver {
 }
 
 mixin TGRouteAware {
-  /// Called when the top route has been popped off, and the current route
-  /// shows up.
   void didPopNext() {}
 
-  /// Called when the current route has been pushed.
-  void didPush() {}
-
-  /// Called when the current route has been popped off.
-  void didPop() {}
-
-  /// Called when a new route has been pushed, and the current route is no
-  /// longer visible.
   void didPushNext() {}
 }
 
