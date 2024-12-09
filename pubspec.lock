@@ -49,6 +49,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.8"
+  dart_scope_functions:
+    dependency: "direct main"
+    description:
+      name: dart_scope_functions
+      sha256: "1a00fc84ddd263a0893b981ae9d111e694803d1bc3218e0448e4c05f5a795cbd"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.7"
   fake_async:
     dependency: transitive
     description:

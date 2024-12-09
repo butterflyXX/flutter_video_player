@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_player/super_player.dart';
 import 'package:video_player/home/home_page.dart';
+import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/widget/buffering_widget.dart';
 
 void main() async {
@@ -26,73 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const HomePage(),
-    );
-  }
-}
-
-class TestPage extends StatefulWidget {
-  const TestPage({super.key});
-
-  @override
-  State<TestPage> createState() => _TestPageState();
-}
-
-class _TestPageState extends State<TestPage> {
-  final _controller = TXVodPlayerController();
-
-  final _aspectRatio = ValueNotifier<double?>(null);
-
-  @override
-  void initState() {
-    super.initState();
-    initializePlayer();
-  }
-
-  initializePlayer() async {
-    _controller.onPlayerNetStatusBroadcast.listen((event) async {
-      double w = (event["VIDEO_WIDTH"]).toDouble();
-      double h = (event["VIDEO_HEIGHT"]).toDouble();
-      if (w > 0 && h > 0) {
-        _aspectRatio.value = 1.0 * w / h;
-      }
-    });
-    await _controller.initialize();
-    _controller.setAutoPlay(isAutoPlay: false);
-    String url = "https://video-v1.mydramawave.com/vt/video/convert-test/ofHuiO1SwI_839bb12d-37c7-4db3-b9ac-861073978264/h264/master.m3u8";
-    await _controller.startVodPlay(url);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: Colors.black,
-        child: ValueListenableBuilder(
-          valueListenable: _aspectRatio,
-          builder: (context, value, child) {
-            if (value != null) {
-              return Center(
-                child: AspectRatio(
-                  aspectRatio: value,
-                  child: TXPlayerVideo(controller: _controller),
-                ),
-              );
-            } else {
-              return Column(
-                children: [
-                  child!,
-                  const SizedBox(height: 100,),
-                ],
-              );
-            }
-          },
-          child: const BufferingWidget(),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        },
-      ),
+      navigatorObservers: [pageRouter],
     );
   }
 }

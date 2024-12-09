@@ -60,11 +60,6 @@ class _PlayItemState extends State<PlayItem> {
           return Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              FloatingActionButton(
-                onPressed: () {
-                  controller.resume();
-                },
-              ),
               child!,
               const SizedBox(
                 height: 100,

@@ -40,11 +40,21 @@ class VideoListController {
   }
 
   updateCache(VideoPlayerController controller) {
-    print('控制器数量 ${_controllers.length}');
     if (_controllers.length > maxCacheCount) {
-      print('清除播放器 ${urls.indexOf(controller.url!)}');
       _controllers.remove(controller.url);
       controller.dispose();
+    }
+  }
+
+  /// 清空播放器列表,只留一个当前返回时正在播放的控制器
+  clearExcept(VideoPlayerController controller) {
+    final keys = _controllers.keys.toList();
+    for (final key in keys) {
+      final target = _controllers[key]!;
+      if (target != controller) {
+        target.dispose();
+        _controllers.remove(key);
+      }
     }
   }
 
