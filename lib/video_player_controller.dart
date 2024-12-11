@@ -40,9 +40,7 @@ class VideoPlayerController extends TXVodPlayerController {
         //分辨率获取,获取完分辨率展示播放器UI
         double w = (event["EVT_PARAM1"]).toDouble();
         double h = (event["EVT_PARAM2"]).toDouble();
-        if (aspectRatio.value == 0) {
-          aspectRatio.value = 1.0 * w / h;
-        }
+        aspectRatio.value = 1.0 * w / h;
       }
 
       if(event["event"] == TXVodPlayEvent.PLAY_EVT_PLAY_PROGRESS) {

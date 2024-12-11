@@ -64,7 +64,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
                   settings: const RouteSettings(name: detailPageRoute),
                   builder: (_) {
                     return DetailPage(
-                      initialUrl: group.currentUrl,
+                      groupInfo: group,
                       listController: subController,
                     );
                   },

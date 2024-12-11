@@ -34,9 +34,16 @@ class VideoListController {
     if (_controllers[url] == null) {
       final controller = _inflateController(url);
       _controllers[url] = controller;
+      controller.setRate(speed.value);
     }
-    setSpeed(speed.value);
     return _controllers[url]!;
+  }
+
+  replaceController(String oldUrl, String newUrl) async {
+    if (oldUrl == newUrl) return;
+    final old = _controllers.remove(oldUrl)!;
+    old.startVodPlay(newUrl);
+    _controllers[newUrl] = old;
   }
 
   VideoPlayerController? getControllerIfHave(String url) {

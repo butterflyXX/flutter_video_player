@@ -2,6 +2,7 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:video_player/global.dart';
 import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/source.dart';
 import 'package:video_player/video_list_controller.dart';
@@ -10,11 +11,11 @@ import 'package:video_player/widget/play_item.dart';
 const detailPageRoute = '/detailPageRoute';
 
 class DetailPage extends ConsumerStatefulWidget {
-  final String? initialUrl;
+  final GroupModel groupInfo;
   final VideoListController? listController;
 
   const DetailPage({
-    this.initialUrl,
+    required this.groupInfo,
     this.listController,
     super.key,
   });
@@ -27,12 +28,11 @@ class _DetailPageState extends ConsumerState<DetailPage> {
   late PageController _pageController;
   late final VideoListController _listController = widget.listController ?? VideoListController();
 
+  VideoListController get controller => ref.read(homeVideoListProvider.notifier).listController;
+
   @override
   void initState() {
-    int index = 0;
-    if (widget.initialUrl != null) {
-      index = urls.indexOf(widget.initialUrl!);
-    }
+    final index = urls.indexOf(widget.groupInfo.currentUrl);
     _pageController = PageController(initialPage: index);
     setCurrentVideoPlayerController(index);
     super.initState();
@@ -47,6 +47,12 @@ class _DetailPageState extends ConsumerState<DetailPage> {
     final url = urls[index];
     final current = _listController.getController(url);
     _listController.setCurrentVideoPlayerController(current);
+    final group = data.firstWhere((it) => it.groupId == widget.groupInfo.groupId);
+    final old = group.currentUrl;
+    if (old != url) {
+      group.currentUrl = url;
+      controller.replaceController(old, url);
+    }
   }
 
   @override
