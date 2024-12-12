@@ -38,6 +38,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   screenshot: ^3.0.0
   dart_scope_functions: 0.1.7
+  collection: 1.18.0
 
 dev_dependencies:
   flutter_test:

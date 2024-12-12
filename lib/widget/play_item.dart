@@ -3,6 +3,7 @@ import 'package:super_player/super_player.dart';
 import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/video_player_controller.dart';
 import 'package:video_player/widget/buffering_widget.dart';
+import 'package:video_player/widget/video_control_widget.dart';
 
 class PlayItem extends StatefulWidget {
   final String url;
@@ -31,44 +32,19 @@ class _PlayItemState extends State<PlayItem> {
     return ValueListenableBuilder(
       valueListenable: controller.aspectRatio,
       builder: (context, aspectRatio, child) {
-        if (aspectRatio != 0) {
-          return Stack(
-            children: [
-              Center(
-                child: AspectRatio(
-                  aspectRatio: aspectRatio,
-                  child: TXPlayerVideo(controller: controller),
-                ),
+        return Stack(
+          children: [
+            if (aspectRatio != 0) Center(
+              child: AspectRatio(
+                aspectRatio: aspectRatio,
+                child: TXPlayerVideo(controller: controller),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(onPressed: (){
-                    controller.pause();
-                  }, icon: Icon(Icons.pause)),
-                  IconButton(onPressed: (){
-                    controller.resume();
-                  }, icon: Icon(Icons.play_arrow)),
-                  const SizedBox(
-                    height: 100,
-                  ),
-                ],
-              ),
-            ],
-          );
-        } else {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              child!,
-              const SizedBox(
-                height: 100,
-              ),
-            ],
-          );
-        }
+            ),
+            child!,
+          ],
+        );
       },
-      child: const BufferingWidget(),
+      child: VideoControlWidget(controller: controller,),
     );
   }
 }

@@ -12,7 +12,8 @@ class VideoPlayerController extends TXVodPlayerController {
   bool _canResume = false;
   final _initializeCompleter = Completer();
 
-  final position = ValueNotifier<double?>(null);
+  double duration = 0;
+  final position = ValueNotifier<double>(0);
 
   StreamSubscription? _subscription;
 
@@ -46,16 +47,10 @@ class VideoPlayerController extends TXVodPlayerController {
       if(event["event"] == TXVodPlayEvent.PLAY_EVT_PLAY_PROGRESS) {
         //播放进度
 
-        // 播放位置 单位s
-        position.value = event['EVT_PLAY_PROGRESS'];
-
-        readProvider(positionProvider.notifier).update(controller: this);
-
-        // 视频可播放时长 单位s
-        final duration = (event['PLAYABLE_DURATION'] * 1000).round;
-
-        // 视频总时长 单位s
-        final allDuration = (event['EVT_PLAY_DURATION'] * 1000).round;
+        // 视频总长, 单位是秒
+        duration = event[TXVodPlayEvent.EVT_PLAY_DURATION];
+        // 播放进度, 单位是秒
+        position.value = event[TXVodPlayEvent.EVT_PLAY_PROGRESS];
       }
 
     });

@@ -31,18 +31,18 @@ class PositionModel {
   }
 }
 
-final positionProvider = NotifierProvider<PositionNotifier, PositionModel>(PositionNotifier.new);
-
-class PositionNotifier extends Notifier<PositionModel> {
-  @override
-  PositionModel build() {
-    return PositionModel();
-  }
-
-  update({String? groupId, VideoPlayerController? controller,}) {
-    state = state.copyWith(groupId: groupId, controller: controller,);
-  }
-}
+// final positionProvider = NotifierProvider<PositionNotifier, PositionModel>(PositionNotifier.new);
+//
+// class PositionNotifier extends Notifier<PositionModel> {
+//   @override
+//   PositionModel build() {
+//     return PositionModel();
+//   }
+//
+//   update({String? groupId, VideoPlayerController? controller,}) {
+//     state = state.copyWith(groupId: groupId, controller: controller,);
+//   }
+// }
 
 final homeVideoListProvider = NotifierProvider<HomeVideoNotifier, bool>(HomeVideoNotifier.new);
 
