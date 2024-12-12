@@ -4,6 +4,7 @@ import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/video_player_controller.dart';
 import 'package:video_player/widget/progress_bar.dart';
+import 'package:video_player/widget/speed_dialog.dart';
 
 class VideoControlWidget extends StatefulWidget {
   final VideoPlayerController controller;
@@ -32,7 +33,39 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
               child: ProgressBar(controller: controller),
             ),
             SizedBox(
-              height: ScreenUtil().bottomBarHeight + 50,
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ValueListenableBuilder(
+                  valueListenable: widget.controller.groupController.speed,
+                  builder: (context, speed, _) {
+                    return speedWidget(
+                      "${speed}x",
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return SpeedDialog(
+                              selected: speed,
+                              onTap: (value) {
+                                widget.controller.groupController.setSpeed(value);
+                              },
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(width: 20),
+                speedWidget("Auto"),
+                const SizedBox(width: 20),
+              ],
+            ),
+            SizedBox(
+              height: ScreenUtil().bottomBarHeight,
             ),
           ],
         ),
@@ -58,6 +91,26 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget speedWidget(String title, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 30,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            // color: Colors.white,
+            border: Border.all(color: color)),
+        child: Center(
+          child: Text(
+            title,
+            style: const TextStyle(color: color),
+          ),
+        ),
+      ),
     );
   }
 }

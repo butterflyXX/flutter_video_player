@@ -12,7 +12,7 @@ class VideoListController {
 
   VideoPlayerController _inflateController(String url) {
     setCount(true);
-    final controller = VideoPlayerController();
+    final controller = VideoPlayerController(this);
     controller.initialize().then((_) async {
       controller.setLoop(true);
       controller.setAutoPlay(isAutoPlay: false);

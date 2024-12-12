@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:super_player/super_player.dart';
-import 'package:video_player/global.dart';
+import 'package:video_player/video_list_controller.dart';
 
 class VideoPlayerController extends TXVodPlayerController {
+  final VideoListController groupController;
   double rate = 1;
   String? url;
   final aspectRatio = ValueNotifier<double>(0);
@@ -27,7 +28,7 @@ class VideoPlayerController extends TXVodPlayerController {
     return _initializeCompleter.future;
   }
 
-  VideoPlayerController() {
+  VideoPlayerController(this.groupController) {
     _subscription = onPlayerEventBroadcast.listen((event) async {
       if(event["event"] == TXVodPlayEvent.PLAY_EVT_VOD_PLAY_PREPARED) {
         //加载完毕,可以执行播放或者暂停
