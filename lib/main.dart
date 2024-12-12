@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/home/home_page.dart';
@@ -23,13 +24,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     baseContext = context;
-    return MaterialApp(
-      title: 'Flutter Video List Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
-      navigatorObservers: [pageRouter],
+    return ScreenUtilInit(
+      builder: (_ , child) {
+        return MaterialApp(
+          title: 'Flutter Video List Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: child!,
+          navigatorObservers: [pageRouter],
+        );
+      },
+      child: const HomePage(),
     );
   }
 }

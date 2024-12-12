@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/global.dart';
 import 'package:video_player/util/value_notifier_util.dart';
 import 'package:video_player/video_player_controller.dart';
 import 'package:video_player/widget/buffering_widget.dart';
@@ -16,7 +17,6 @@ class ProgressBar extends StatefulWidget {
 }
 
 class _ProgressBarState extends State<ProgressBar> {
-  final color = const Color(0xFFFDFBFC);
 
   final _targetValue = ValueNotifier<double>(0);
   int _task = 0;

@@ -39,6 +39,7 @@ dependencies:
   screenshot: ^3.0.0
   dart_scope_functions: 0.1.7
   collection: 1.18.0
+  flutter_screenutil: ^5.9.3
 
 dev_dependencies:
   flutter_test:

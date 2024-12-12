@@ -6,6 +6,7 @@ import 'package:video_player/video_player_controller.dart';
 
 late BuildContext baseContext;
 
+const color = Color(0xFFFDFBFC);
 int count = 0;
 setCount(bool add) {
   if (add) {
