@@ -41,11 +41,21 @@ class VideoListController {
     return _controllers[url]!;
   }
 
-  replaceController(String oldUrl, String newUrl) async {
-    if (oldUrl == newUrl) return;
+  VideoPlayerController replaceController(String oldUrl, String newUrl) {
     final old = _controllers.remove(oldUrl)!;
-    old.startVodPlay(newUrl);
-    _controllers[newUrl] = old;
+    if (oldUrl != newUrl) {
+      old.startVodPlay(newUrl);
+      _controllers[newUrl] = old;
+    }
+    return old;
+  }
+
+  VideoPlayerController replaceOrCreateController(String url) {
+    if (_controllers.isEmpty) {
+      return getController(url);
+    } else {
+      return replaceController(_controllers.values.first.url!, url);
+    }
   }
 
   VideoPlayerController? getControllerIfHave(String url) {
