@@ -6,6 +6,16 @@ import 'package:video_player/video_player_controller.dart';
 
 late BuildContext baseContext;
 
+int count = 0;
+setCount(bool add) {
+  if (add) {
+    count++;
+  } else {
+    count--;
+  }
+  print('播放器数量变化: $count');
+}
+
 /// 仅适用于read
 T readProvider<T>(ProviderListenable<T> provider) {
   return ProviderScope.containerOf(baseContext, listen: false).read(provider);

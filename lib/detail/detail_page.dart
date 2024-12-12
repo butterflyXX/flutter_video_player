@@ -3,6 +3,8 @@ import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/global.dart';
+import 'package:video_player/model/item_model.dart';
+import 'package:video_player/model/series_model.dart';
 import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/source.dart';
 import 'package:video_player/video_list_controller.dart';
@@ -11,11 +13,11 @@ import 'package:video_player/widget/play_item.dart';
 const detailPageRoute = '/detailPageRoute';
 
 class DetailPage extends ConsumerStatefulWidget {
-  final GroupModel groupInfo;
+  final SeriesModel model;
   final VideoListController? listController;
 
   const DetailPage({
-    required this.groupInfo,
+    required this.model,
     this.listController,
     super.key,
   });
@@ -32,7 +34,8 @@ class _DetailPageState extends ConsumerState<DetailPage> {
 
   @override
   void initState() {
-    final index = urls.indexOf(widget.groupInfo.currentUrl);
+    final item = widget.model.episodeList.firstWhere((it) => it.videoUrl == widget.model.episode.videoUrl);
+    final index = widget.model.episodeList.indexOf(item);
     _pageController = PageController(initialPage: index);
     setCurrentVideoPlayerController(index);
     super.initState();
@@ -43,15 +46,14 @@ class _DetailPageState extends ConsumerState<DetailPage> {
     super.dispose();
   }
 
-  void setCurrentVideoPlayerController(index) {
-    final url = urls[index];
-    final current = _listController.getController(url);
+  void setCurrentVideoPlayerController(int index) {
+    final item = widget.model.episodeList[index];
+    final current = _listController.getController(item.videoUrl);
     _listController.setCurrentVideoPlayerController(current);
-    final group = data.firstWhere((it) => it.groupId == widget.groupInfo.groupId);
-    final old = group.currentUrl;
-    if (old != url) {
-      group.currentUrl = url;
-      controller.replaceController(old, url);
+    final old = widget.model.episode.videoUrl;
+    if (old != item.videoUrl) {
+      widget.model.episode = item;
+      controller.replaceController(old, item.videoUrl);
     }
   }
 
@@ -63,9 +65,9 @@ class _DetailPageState extends ConsumerState<DetailPage> {
         allowImplicitScrolling: true,
         controller: _pageController,
         scrollDirection: Axis.vertical,
-        itemCount: urls.length,
+        itemCount: widget.model.episodeList.length,
         itemBuilder: (context, index) {
-          final url = urls[index];
+          final url = widget.model.episodeList[index].videoUrl;
           return PlayItem(
             listController: _listController,
             url: url,

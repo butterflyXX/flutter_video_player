@@ -39,11 +39,9 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
   }
 
   void setCurrentVideoPlayerController(index) {
-    final url = data[index].currentUrl;
+    final url = data[index].episode.videoUrl;
     final current = controller.getController(url);
     controller.setCurrentVideoPlayerController(current);
-    //缓冲详情页播放器
-    subController.getController(url);
   }
 
   @override
@@ -64,7 +62,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
                   settings: const RouteSettings(name: detailPageRoute),
                   builder: (_) {
                     return DetailPage(
-                      groupInfo: group,
+                      model: group,
                       listController: subController,
                     );
                   },
@@ -73,7 +71,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
             },
             child: PlayItem(
               listController: controller,
-              url: group.currentUrl,
+              url: group.episode.videoUrl,
             ),
           );
         },

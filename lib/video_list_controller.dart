@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:video_player/global.dart';
 import 'package:video_player/source.dart';
 import 'package:video_player/video_player_controller.dart';
 
@@ -7,9 +8,10 @@ class VideoListController {
 
   VideoPlayerController? currentController;
 
-  VideoListController({this.maxCacheCount = 3});
+  VideoListController({this.maxCacheCount = 5});
 
   VideoPlayerController _inflateController(String url) {
+    setCount(true);
     final controller = VideoPlayerController();
     controller.initialize().then((_) async {
       controller.setLoop(true);
@@ -52,9 +54,14 @@ class VideoListController {
 
   disposeCache(VideoPlayerController controller) {
     if (_controllers.length > maxCacheCount) {
-      _controllers.remove(controller.url);
-      controller.dispose();
+      disposeController(controller);
     }
+  }
+
+  disposeController(VideoPlayerController controller) {
+    setCount(false);
+    _controllers.remove(controller.url);
+    controller.dispose();
   }
 
   /// 清空播放器列表,只留一个当前返回时正在播放的控制器
@@ -63,8 +70,7 @@ class VideoListController {
     for (final key in keys) {
       final target = _controllers[key]!;
       if (target != controller) {
-        target.dispose();
-        _controllers.remove(key);
+        disposeController(target);
       }
     }
   }
