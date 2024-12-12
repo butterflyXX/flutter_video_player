@@ -67,10 +67,10 @@ class _DetailPageState extends ConsumerState<DetailPage> {
         scrollDirection: Axis.vertical,
         itemCount: widget.model.episodeList.length,
         itemBuilder: (context, index) {
-          final url = widget.model.episodeList[index].videoUrl;
+          final model = widget.model.episodeList[index];
           return PlayItem(
             listController: _listController,
-            url: url,
+            model: model,
           );
         },
         onPageChanged: setCurrentVideoPlayerController,

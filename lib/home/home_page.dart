@@ -72,7 +72,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
             },
             child: PlayItem(
               listController: controller,
-              url: group.episode.videoUrl,
+              model: group.episode,
             ),
           );
         },
@@ -85,7 +85,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
   void didPopNext() {
     subController.currentController?.let((it) async {
       await it.pause();
-      await it.position.value?.let((position) async => await controller.currentController?.seek(position));
+      await it.position.value.let((position) async => await controller.currentController?.seek(position));
       controller.currentController?.resume();
       subController.clearExcept(it);
     });
@@ -95,7 +95,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
   void didPushNext() {
     controller.currentController?.let((it) async {
       await it.pause();
-      await it.position.value?.let((position) async => await subController.currentController?.seek(position));
+      await it.position.value.let((position) async => await subController.currentController?.seek(position));
       subController.currentController?.resume();
     });
   }
