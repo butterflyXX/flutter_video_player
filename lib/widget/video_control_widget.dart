@@ -38,12 +38,6 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                IconButton(onPressed: () async {
-                  // print(await controller.get());
-                }, icon: Icon(Icons.add)),
-                IconButton(onPressed: () async {
-                  print(await controller.getBitrateIndex());
-                }, icon: Icon(Icons.add)),
                 ValueListenableBuilder(
                   valueListenable: widget.controller.groupController.speed,
                   builder: (context, speed, _) {
@@ -69,20 +63,19 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                 ),
                 const SizedBox(width: 20),
                 ValueListenableBuilder(
-                  valueListenable: controller.groupController.bitrateIndex,
+                  valueListenable: controller.groupController.currentBitrate,
                   builder: (context, value, _) {
                     return speedWidget(
-                      value.toString(),
+                       '${value?.height.toString()}P',
                       onTap: () async {
-                        List bits = (await controller.getSupportedBitrates())!;
                         showModalBottomSheet(
                           context: context,
                           builder: (context) {
                             return SpeedDialog(
-                              source: bits.map((item) => (item['height'] as int)).toList(),
-                              selected: 0,
+                              source: controller.groupController.bitrateList.map((item) => '${item.height}P').toList(),
+                              selected: '${value?.height.toString()}P',
                               onTap: (index) {
-                                controller.groupController.setBitrateIndex(bits[index]['index']);
+                                controller.groupController.setBitrateIndex(controller.groupController.bitrateList[index]);
                               },
                             );
                           },

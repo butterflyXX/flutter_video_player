@@ -4,15 +4,19 @@ import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/model/item_model.dart';
 import 'package:video_player/video_list_controller.dart';
-import 'package:video_player/widget/video_control_widget.dart';
+import 'package:video_player/video_player_controller.dart';
+
+typedef ControlWidgetBuilder = Widget Function(BuildContext context, VideoPlayerController controller);
 
 class PlayItem extends StatefulWidget {
   final ItemModel model;
   final VideoListController listController;
+  final ControlWidgetBuilder controlBuilder;
 
   const PlayItem({
     required this.model,
     required this.listController,
+    required this.controlBuilder,
     super.key,
   });
 
@@ -51,9 +55,7 @@ class _PlayItemState extends State<PlayItem> {
           ],
         );
       },
-      child: VideoControlWidget(
-        controller: controller,
-      ),
+      child: widget.controlBuilder(context, controller),
     );
   }
 

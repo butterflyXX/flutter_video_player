@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
+import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
+import 'package:video_player/model/bitrate_model.dart';
 import 'package:video_player/video_list_controller.dart';
 
 class VideoPlayerController extends TXVodPlayerController {
@@ -16,8 +19,12 @@ class VideoPlayerController extends TXVodPlayerController {
 
   double duration = 0;
   final position = ValueNotifier<double>(0);
+  double _height = 0;
+  double _width = 0;
 
-  StreamSubscription? _subscription;
+  StreamSubscription? _eventSubscription;
+  StreamSubscription? _statusSubscription;
+
 
   @override
   Future<void> initialize({bool? onlyAudio}) async {
@@ -40,8 +47,8 @@ class VideoPlayerController extends TXVodPlayerController {
       setLoop(true);
       setAutoPlay(isAutoPlay: false);
       startVodPlay(url);
-      setBitrateIndex(groupController.bitrateIndex.value).then((_) {
-        setRate(groupController.speed.value);
+      groupController.currentBitrate.value?.let((it) {
+        setBitrateIndex(it.index);
       });
     });
   }
@@ -51,20 +58,30 @@ class VideoPlayerController extends TXVodPlayerController {
     required this.url,
   }) {
     _inflateController();
-    _subscription = onPlayerEventBroadcast.listen((event) async {
+    _eventSubscription = onPlayerEventBroadcast.listen((event) async {
       if (event["event"] == TXVodPlayEvent.PLAY_EVT_VOD_PLAY_PREPARED) {
         //加载完毕,可以执行播放或者暂停
         if (!_canResume) {
           _canResume = true;
           _initializeCompleter.complete();
         }
+        getSupportedBitrates().then((bitrateList) {
+          groupController.bitrateList.clear();
+          bitrateList?.let((list) {
+            for (var item in list) {
+              groupController.bitrateList.add(BitrateModel.fromJson(Map<String, dynamic>.from(item)));
+            }
+          });
+        });
       }
 
       if (event["event"] == TXVodPlayEvent.PLAY_EVT_CHANGE_RESOLUTION) {
         //分辨率获取,获取完分辨率展示播放器UI
-        double w = (event["EVT_PARAM1"]).toDouble();
-        double h = (event["EVT_PARAM2"]).toDouble();
-        aspectRatio.value = 1.0 * w / h;
+        _width = (event["EVT_PARAM1"]).toDouble();
+        _height = (event["EVT_PARAM2"]).toDouble();
+        final currentBitrate = groupController.bitrateList.firstWhereOrNull((item) => (item.height == _height && item.width == _width));
+        groupController.currentBitrate.value = currentBitrate;
+        setRate(groupController.speed.value);
       }
 
       if (event["event"] == TXVodPlayEvent.PLAY_EVT_PLAY_PROGRESS) {
@@ -74,6 +91,14 @@ class VideoPlayerController extends TXVodPlayerController {
         duration = event[TXVodPlayEvent.EVT_PLAY_DURATION];
         // 播放进度, 单位是秒
         position.value = event[TXVodPlayEvent.EVT_PLAY_PROGRESS];
+      }
+    });
+
+    _statusSubscription = onPlayerNetStatusBroadcast.listen((event) async {
+      double w = (event["VIDEO_WIDTH"]).toDouble();
+      double h = (event["VIDEO_HEIGHT"]).toDouble();
+      if (w > 0 && h > 0) {
+        aspectRatio.value = w / h;
       }
     });
   }
@@ -93,7 +118,8 @@ class VideoPlayerController extends TXVodPlayerController {
 
   @override
   Future<void> dispose() {
-    _subscription?.cancel();
+    _eventSubscription?.cancel();
+    _statusSubscription?.cancel();
     return super.dispose();
   }
 }

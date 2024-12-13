@@ -9,6 +9,7 @@ import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/source.dart';
 import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/widget/play_item.dart';
+import 'package:video_player/widget/video_control_widget.dart';
 
 const detailPageRoute = '/detailPageRoute';
 
@@ -71,6 +72,9 @@ class _DetailPageState extends ConsumerState<DetailPage> {
           return PlayItem(
             listController: _listController,
             model: model,
+            controlBuilder: (context, controller) {
+              return VideoControlWidget(controller: controller,);
+            },
           );
         },
         onPageChanged: setCurrentVideoPlayerController,

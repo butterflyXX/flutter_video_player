@@ -23,6 +23,7 @@ class SpeedDialog<T> extends StatelessWidget {
           SizedBox(height: 20,),
           ...List.generate(source.length, (index) {
             return GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 onTap?.call(index);
                 Navigator.of(context).pop();

@@ -8,6 +8,7 @@ import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/source.dart';
 import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/video_list_controller.dart';
+import 'package:video_player/widget/home_video_control_widget.dart';
 import 'package:video_player/widget/play_item.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -73,6 +74,9 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
             child: PlayItem(
               listController: controller,
               model: group.episode,
+              controlBuilder: (context, controller) {
+                return HomeVideoControlWidget(controller: controller,);
+              },
             ),
           );
         },

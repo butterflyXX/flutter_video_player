@@ -1,6 +1,9 @@
+import 'package:collection/collection.dart';
+import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
+import 'package:video_player/model/bitrate_model.dart';
 import 'package:video_player/source.dart';
 import 'package:video_player/video_player_controller.dart';
 
@@ -12,7 +15,8 @@ class VideoListController {
   VideoListController({this.maxCacheCount = 3});
 
   final speed = ValueNotifier<double>(1);
-  final bitrateIndex = ValueNotifier<int>(0);
+  final currentBitrate = ValueNotifier<BitrateModel?>(null);
+  final List<BitrateModel> bitrateList = [];
 
   final Map<String, VideoPlayerController> _controllers = {};
 
@@ -25,7 +29,6 @@ class VideoListController {
 
   VideoPlayerController getController(String url) {
     if (_controllers[url] == null) {
-      print(url);
       final controller = VideoPlayerController(groupController: this, url: url);
       _controllers[url] = controller;
     }
@@ -85,12 +88,12 @@ class VideoListController {
     }
   }
 
-  setBitrateIndex(int index) {
-    bitrateIndex.value = index;
-    for (final controller in _controllers.values) {
-      // if (controller.rate != speed.value) {
+  setBitrateIndex(BitrateModel bitrate) {
+    currentBitrate.value = bitrate;
+    bitrateList.firstWhereOrNull((it) => (it.height == bitrate.height && it.width == bitrate.width))?.index.let((index) {
+      for (final controller in _controllers.values) {
         controller.setBitrateIndex(index);
-      // }
-    }
+      }
+    });
   }
 }
