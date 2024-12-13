@@ -36,6 +36,9 @@ class _PlayItemState extends State<PlayItem> {
       builder: (context, aspectRatio, child) {
         return Stack(
           children: [
+            Center(
+              child: Image.network(widget.model.cover),
+            ),
             if (aspectRatio != 0)
               Center(
                 child: AspectRatio(
@@ -59,15 +62,19 @@ class _PlayItemState extends State<PlayItem> {
       padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
       child: Row(
         children: [
-          (ModalRoute.of(context)?.canPop ?? false) ? IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: color,
-            ),
-          ): const SizedBox(width: 10,),
+          (ModalRoute.of(context)?.canPop ?? false)
+              ? IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: color,
+                  ),
+                )
+              : const SizedBox(
+                  width: 10,
+                ),
           Expanded(
             child: Text(
               widget.model.name,
