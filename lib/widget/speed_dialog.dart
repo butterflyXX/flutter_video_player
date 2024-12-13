@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-class SpeedDialog extends StatelessWidget {
-  static const _list = <double>[0.25, 0.5, 1, 1.5, 2];
-  final double selected;
-  final ValueChanged<double>? onTap;
+class SpeedDialog<T> extends StatelessWidget {
+  final List<T> source;
+  final T selected;
+  final ValueChanged<int>? onTap;
 
   const SpeedDialog({
+    required this.source,
     required this.selected,
     this.onTap,
     super.key,
@@ -20,10 +21,10 @@ class SpeedDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: 20,),
-          ...List.generate(_list.length, (index) {
+          ...List.generate(source.length, (index) {
             return GestureDetector(
               onTap: () {
-                onTap?.call(_list[index]);
+                onTap?.call(index);
                 Navigator.of(context).pop();
               },
               child: _item(index),
@@ -36,7 +37,7 @@ class SpeedDialog extends StatelessWidget {
   }
 
   Widget _item(int index) {
-    final selectIndex = _list.indexOf(selected);
+    final selectIndex = source.indexOf(selected);
     final isSelected = selectIndex == index;
     final textColor = isSelected ? Colors.redAccent : Colors.black;
     return Stack(
@@ -46,7 +47,7 @@ class SpeedDialog extends StatelessWidget {
           height: 40,
           child: Center(
             child: Text(
-              _list[index].toString(),
+              source[index].toString(),
               style: TextStyle(color: textColor),
             ),
           ),

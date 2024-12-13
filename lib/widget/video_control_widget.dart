@@ -38,6 +38,12 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                IconButton(onPressed: () async {
+                  // print(await controller.get());
+                }, icon: Icon(Icons.add)),
+                IconButton(onPressed: () async {
+                  print(await controller.getBitrateIndex());
+                }, icon: Icon(Icons.add)),
                 ValueListenableBuilder(
                   valueListenable: widget.controller.groupController.speed,
                   builder: (context, speed, _) {
@@ -47,10 +53,12 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                         showModalBottomSheet(
                           context: context,
                           builder: (context) {
+                            const speeds = <double>[0.25, 0.5, 1, 1.5, 2];
                             return SpeedDialog(
+                              source: speeds,
                               selected: speed,
-                              onTap: (value) {
-                                widget.controller.groupController.setSpeed(value);
+                              onTap: (index) {
+                                controller.groupController.setSpeed(speeds[index]);
                               },
                             );
                           },
@@ -60,7 +68,29 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                   },
                 ),
                 const SizedBox(width: 20),
-                speedWidget("Auto"),
+                ValueListenableBuilder(
+                  valueListenable: controller.groupController.bitrateIndex,
+                  builder: (context, value, _) {
+                    return speedWidget(
+                      value.toString(),
+                      onTap: () async {
+                        List bits = (await controller.getSupportedBitrates())!;
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return SpeedDialog(
+                              source: bits.map((item) => (item['height'] as int)).toList(),
+                              selected: 0,
+                              onTap: (index) {
+                                controller.groupController.setBitrateIndex(bits[index]['index']);
+                              },
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
                 const SizedBox(width: 20),
               ],
             ),

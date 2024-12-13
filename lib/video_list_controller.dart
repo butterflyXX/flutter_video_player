@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/source.dart';
 import 'package:video_player/video_player_controller.dart';
@@ -8,20 +9,10 @@ class VideoListController {
 
   VideoPlayerController? currentController;
 
-  VideoListController({this.maxCacheCount = 5});
-
-  VideoPlayerController _inflateController(String url) {
-    setCount(true);
-    final controller = VideoPlayerController(this);
-    controller.initialize().then((_) async {
-      controller.setLoop(true);
-      controller.setAutoPlay(isAutoPlay: false);
-      controller.startVodPlay(url);
-    });
-    return controller;
-  }
+  VideoListController({this.maxCacheCount = 3});
 
   final speed = ValueNotifier<double>(1);
+  final bitrateIndex = ValueNotifier<int>(0);
 
   final Map<String, VideoPlayerController> _controllers = {};
 
@@ -34,9 +25,9 @@ class VideoListController {
 
   VideoPlayerController getController(String url) {
     if (_controllers[url] == null) {
-      final controller = _inflateController(url);
+      print(url);
+      final controller = VideoPlayerController(groupController: this, url: url);
       _controllers[url] = controller;
-      controller.setRate(speed.value);
     }
     return _controllers[url]!;
   }
@@ -54,7 +45,7 @@ class VideoListController {
     if (_controllers.isEmpty) {
       return getController(url);
     } else {
-      return replaceController(_controllers.values.first.url!, url);
+      return replaceController(_controllers.values.first.url, url);
     }
   }
 
@@ -91,6 +82,15 @@ class VideoListController {
       if (controller.rate != speed.value) {
         controller.setRate(newSpeed);
       }
+    }
+  }
+
+  setBitrateIndex(int index) {
+    bitrateIndex.value = index;
+    for (final controller in _controllers.values) {
+      // if (controller.rate != speed.value) {
+        controller.setBitrateIndex(index);
+      // }
     }
   }
 }
