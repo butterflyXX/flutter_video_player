@@ -44,12 +44,11 @@ class VideoListController {
     return old;
   }
 
-  VideoPlayerController replaceOrCreateController(String url) {
-    if (_controllers.isEmpty) {
-      return getController(url);
-    } else {
-      return replaceController(_controllers.values.first.url, url);
-    }
+  VideoPlayerController cacheDetailController(String url) {
+    currentBitrate.value = null;
+    speed.value = 1;
+    clearExcept();
+    return getController(url);
   }
 
   VideoPlayerController? getControllerIfHave(String url) {
@@ -69,7 +68,7 @@ class VideoListController {
   }
 
   /// 清空播放器列表,只留一个当前返回时正在播放的控制器
-  clearExcept(VideoPlayerController controller) {
+  clearExcept({VideoPlayerController? controller}) {
     final keys = _controllers.keys.toList();
     for (final key in keys) {
       final target = _controllers[key]!;

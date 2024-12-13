@@ -43,7 +43,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
     final url = data[index].episode.videoUrl;
     final current = controller.getController(url);
     controller.setCurrentVideoPlayerController(current);
-    subController.replaceOrCreateController(url);
+    subController.cacheDetailController(url);
   }
 
   @override
@@ -91,7 +91,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
       await it.pause();
       await it.position.value.let((position) async => await controller.currentController?.seek(position));
       controller.currentController?.resume();
-      subController.clearExcept(it);
+      subController.clearExcept(controller: it);
     });
   }
 
