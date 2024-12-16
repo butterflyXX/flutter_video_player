@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
-import 'package:video_player/util/value_notifier_util.dart';
 import 'package:video_player/video_player_controller.dart';
 import 'package:video_player/widget/buffering_widget.dart';
 
@@ -52,68 +52,66 @@ class _ProgressBarState extends State<ProgressBar> {
   @override
   Widget build(BuildContext context) {
     const radius = 8.0;
-    return ValueListenableBuilder(
-      valueListenable: widget.controller.aspectRatio,
-      builder: (context, value, _) {
-        return SizedBox(
-          height: 16,
-          child: Stack(
-            children: [
-              if (value == 0) const Center(
-                child: Padding(padding: EdgeInsets.symmetric(horizontal: radius), child: BufferingWidget(),),
-              ),
-              if (value != 0) ValueListenableBuilder(
-                valueListenable: _targetValue,
-                builder: (context, value, _) {
-                  return SliderTheme(
-                    data: SliderThemeData(
-                      activeTrackColor: color,
-                      // 激活轨道颜色
-                      inactiveTrackColor: color.withOpacity(0.2),
-                      // 非激活轨道颜色
-                      thumbColor: color,
-                      // 滑块颜色
-                      overlayColor: color,
-                      // 滑块拖拽时的覆盖层颜色
-                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                      // 滑块形状
-                      trackHeight: 2,
-                      // 轨道高度
-                      overlayShape: const RoundSliderOverlayShape(overlayRadius: radius),
-                    ),
-                    child: Slider(
-                      value: value,
-                      min: 0.0,
-                      max: 1.0,
-                      onChanged: (value) {
-                        _targetValue.value = getRealRatio(value);
-                        _task++;
-                      },
-                      onChangeStart: (value) {
-                        _base = value;
-                        _removeListener();
-                      },
-                      onChangeEnd: (value) {
-                        var ratio = getRealRatio(value);
-                        if (_task == 1) {
-                          ratio = value;
-                        }
-                        final newPosition = ratio * widget.controller.duration;
-                        _task = 0;
-                        widget.controller.seek(newPosition).then((_) {
-                          endDrag();
-                          _addListener();
-                        });
-                      },
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+    return StreamBuilder(stream: widget.controller.onPlayerState, builder: (context, snap) {
+      final canPlay = snap.data != TXPlayerState.buffering;
+      return SizedBox(
+        height: 16,
+        child: Stack(
+          children: [
+            if (!canPlay) const Center(
+              child: Padding(padding: EdgeInsets.symmetric(horizontal: radius), child: BufferingWidget(),),
+            ),
+            if (canPlay) ValueListenableBuilder(
+              valueListenable: _targetValue,
+              builder: (context, value, _) {
+                return SliderTheme(
+                  data: SliderThemeData(
+                    activeTrackColor: color,
+                    // 激活轨道颜色
+                    inactiveTrackColor: color.withOpacity(0.2),
+                    // 非激活轨道颜色
+                    thumbColor: color,
+                    // 滑块颜色
+                    overlayColor: color,
+                    // 滑块拖拽时的覆盖层颜色
+                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                    // 滑块形状
+                    trackHeight: 2,
+                    // 轨道高度
+                    overlayShape: const RoundSliderOverlayShape(overlayRadius: radius),
+                  ),
+                  child: Slider(
+                    value: value,
+                    min: 0.0,
+                    max: 1.0,
+                    onChanged: (value) {
+                      _targetValue.value = getRealRatio(value);
+                      _task++;
+                    },
+                    onChangeStart: (value) {
+                      _base = value;
+                      _removeListener();
+                    },
+                    onChangeEnd: (value) {
+                      var ratio = getRealRatio(value);
+                      if (_task == 1) {
+                        ratio = value;
+                      }
+                      final newPosition = ratio * widget.controller.duration;
+                      _task = 0;
+                      widget.controller.seek(newPosition).then((_) {
+                        endDrag();
+                        _addListener();
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   endDrag() {
