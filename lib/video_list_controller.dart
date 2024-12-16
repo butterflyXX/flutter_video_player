@@ -1,10 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/model/bitrate_model.dart';
-import 'package:video_player/source.dart';
 import 'package:video_player/video_player_controller.dart';
 
 class VideoListController {
