@@ -39,6 +39,22 @@ class _DetailPageState extends ConsumerState<DetailPage> {
     final index = widget.model.episodeList.indexOf(item);
     _pageController = PageController(initialPage: index);
     setCurrentVideoPlayerController(index);
+    widget.listController?.onPlayStart = () {
+      widget.listController?.currentController?.url.let((url) {
+        print('2开始播放 url: $url');
+      });
+    };
+    widget.listController?.onPlayFinished = () {
+      widget.listController?.currentController?.url.let((url) {
+        //判断是否是最后一集
+        final lastUrl = widget.model.episodeList.last.videoUrl;
+        if (lastUrl == url) {
+          // 最后一集播放完毕
+        } else {
+          _pageController.nextPage(duration: const Duration(milliseconds: 250), curve: Curves.easeIn);
+        }
+      });
+    };
     super.initState();
   }
 

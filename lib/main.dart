@@ -14,6 +14,10 @@ void main() async {
   await SuperPlayerPlugin.setGlobalLicense(licenceURL, licenceKey);
   SuperPlayerPlugin.setLogLevel(6);
   SuperPlayerPlugin.setConsoleEnabled(false);
+  //设置播放引擎的全局缓存目录和缓存大小，//单位MB
+  SuperPlayerPlugin.setGlobalMaxCacheSize(1024);
+//设置播放引擎的全局缓存目录
+  SuperPlayerPlugin.setGlobalCacheFolderPath("postfixPath");
   
   runApp(const ProviderScope(child: MyApp()));
 }

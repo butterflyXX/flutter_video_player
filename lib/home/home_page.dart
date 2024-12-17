@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:super_player/super_player.dart';
 import 'package:video_player/detail/detail_page.dart';
 import 'package:video_player/global.dart';
+import 'package:video_player/model/series_model.dart';
 import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/source.dart';
 import 'package:video_player/video_list_controller.dart';
@@ -31,6 +32,28 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       pageRouter.subscribe(this, ModalRoute.of(context));
     });
+    controller.onPlayStart = () {
+      controller.currentController?.url.let((url) {
+        print('开始播放 url: $url');
+      });
+    };
+    controller.onPlayFinished = () {
+      controller.currentController?.url.let((url) {
+        //寻找当前下一集
+        final pageIndex = _pageController.page!.round();
+        final model = data[pageIndex];
+        final currentIndex = model.episodeList.indexWhere((item) => item.videoUrl == url);
+        if (currentIndex < model.episodeList.length - 1) {
+          //说明后面还有剧
+          final needItem = model.episodeList[currentIndex + 1];
+          model.episode = needItem;
+          pushDetail(model);
+          Future.delayed(Durations.medium1).then((_) {
+            controller.replaceController(url, needItem.videoUrl);
+          });
+        }
+      });
+    };
   }
 
   @override
@@ -56,24 +79,14 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
         scrollDirection: Axis.vertical,
         itemCount: data.length,
         itemBuilder: (context, index) {
-          final group = data[index];
+          final model = data[index];
           return GestureDetector(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  settings: const RouteSettings(name: detailPageRoute),
-                  builder: (_) {
-                    return DetailPage(
-                      model: group,
-                      listController: subController,
-                    );
-                  },
-                ),
-              );
+              pushDetail(model);
             },
             child: PlayItem(
               listController: controller,
-              model: group.episode,
+              model: model.episode,
               controlBuilder: (context, controller) {
                 return HomeVideoControlWidget(controller: controller,);
               },
@@ -105,24 +118,17 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
     });
   }
 
-  // @override
-  // void willPopFromNext() {
-  //   subController.currentController?.let((it) async {
-  //     await it.pause();
-  //     it.position.value?.let((position) => controller.currentController?.seek(position));
-  //     subController.clearExcept(it);
-  //   });
-  //   controller.currentController?.resume();
-  //   super.willPopFromNext();
-  // }
-  //
-  // @override
-  // void cancelPopFromNext() {
-  //   controller.currentController?.let((it) async {
-  //     await it.pause();
-  //     it.position.value?.let((position) => subController.currentController?.seek(position));
-  //   });
-  //   subController.currentController?.resume();
-  //   super.cancelPopFromNext();
-  // }
+  pushDetail(SeriesModel model) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: detailPageRoute),
+        builder: (_) {
+          return DetailPage(
+            model: model,
+            listController: subController,
+          );
+        },
+      ),
+    );
+  }
 }

@@ -24,6 +24,7 @@ class VideoPlayerController extends TXVodPlayerController {
 
   StreamSubscription? _eventSubscription;
   StreamSubscription? _statusSubscription;
+  StreamSubscription? _netStatusSubscription;
 
 
   @override
@@ -44,7 +45,7 @@ class VideoPlayerController extends TXVodPlayerController {
     playConfig.smoothSwitchBitrate = true;
     setConfig(playConfig);
     initialize().then((_) async {
-      setLoop(true);
+      // setLoop(true);
       setAutoPlay(isAutoPlay: false);
       startVodPlay(url);
       groupController.currentBitrate.value?.let((it) {
@@ -92,9 +93,17 @@ class VideoPlayerController extends TXVodPlayerController {
         // 播放进度, 单位是秒
         position.value = event[TXVodPlayEvent.EVT_PLAY_PROGRESS];
       }
+
+      if (event['event'] == TXVodPlayEvent.PLAY_EVT_PLAY_END) {
+        groupController.playFinished();
+      }
     });
 
-    _statusSubscription = onPlayerNetStatusBroadcast.listen((event) async {
+    _statusSubscription = onPlayerState.listen((event) async {
+
+    });
+
+    _netStatusSubscription = onPlayerNetStatusBroadcast.listen((event) async {
       double w = (event["VIDEO_WIDTH"]).toDouble();
       double h = (event["VIDEO_HEIGHT"]).toDouble();
       if (w > 0 && h > 0) {
@@ -120,6 +129,7 @@ class VideoPlayerController extends TXVodPlayerController {
   Future<void> dispose() {
     _eventSubscription?.cancel();
     _statusSubscription?.cancel();
+    _netStatusSubscription?.cancel();
     return super.dispose();
   }
 }

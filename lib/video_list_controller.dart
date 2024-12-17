@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/model/bitrate_model.dart';
 import 'package:video_player/video_player_controller.dart';
@@ -18,17 +19,28 @@ class VideoListController {
 
   final Map<String, VideoPlayerController> _controllers = {};
 
+  VoidCallback? onPlayStart;
+  VoidCallback? onPlayFinished;
+
   setCurrentVideoPlayerController(VideoPlayerController controller) async {
     await currentController?.pause();
     currentController = controller;
     await controller.waitCanResume();
     if (currentController == controller) controller.resume();
+    playStart();
   }
 
   VideoPlayerController getController(String url) {
     if (_controllers[url] == null) {
       final controller = VideoPlayerController(groupController: this, url: url);
       _controllers[url] = controller;
+      TXVodDownloadController.instance.startPreLoad(url, 3, -1,
+          onCompleteListener:(int taskId,String url) {
+            print('1111taskID=${taskId} ,url=${url}');
+          }, onErrorListener: (int taskId, String url, int code, String msg) {
+            print('taskID=${taskId} ,url=${url}, code=${code} , msg=${msg}');
+          }
+      );
     }
     return _controllers[url]!;
   }
@@ -92,5 +104,13 @@ class VideoListController {
         controller.setBitrateIndex(index);
       }
     });
+  }
+
+  playStart() {
+    onPlayStart?.call();
+  }
+
+  playFinished() {
+    onPlayFinished?.call();
   }
 }
