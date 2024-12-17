@@ -22,12 +22,14 @@ class VideoListController {
   VoidCallback? onPlayStart;
   VoidCallback? onPlayFinished;
 
-  setCurrentVideoPlayerController(VideoPlayerController controller) async {
+  setCurrentVideoPlayerController({VideoPlayerController? controller}) async {
     await currentController?.pause();
-    currentController = controller;
-    await controller.waitCanResume();
-    if (currentController == controller) controller.resume();
-    playStart();
+    if (controller != null) {
+      currentController = controller;
+      await controller.waitCanResume();
+      if (currentController == controller) controller.resume();
+      playStart();
+    }
   }
 
   VideoPlayerController getController(String url) {
