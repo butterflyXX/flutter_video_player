@@ -7,11 +7,12 @@ import 'package:video_player/global.dart';
 
 final audioSessionProvider = AsyncNotifierProvider<AudioSessionProviderNotifier, bool>(AudioSessionProviderNotifier.new);
 
-class AudioSessionProviderNotifier extends AsyncNotifier<bool> {
+class AudioSessionProviderNotifier extends AsyncNotifier<bool> with WidgetsBindingObserver {
   late AudioSession _audioSession;
 
   @override
   FutureOr<bool> build() async {
+    WidgetsBinding.instance.addObserver(this);
     _audioSession = await AudioSession.instance;
     await _audioSession.configure(const AudioSessionConfiguration.music());
     AudioInterruptionType.duck;
@@ -35,11 +36,22 @@ class AudioSessionProviderNotifier extends AsyncNotifier<bool> {
         });
       }
     });
-
-    // _audioSession.devicesStream.listen((type) {
-    //   print('[session log] devicesStream: $type');
-    // });
     return true;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        ref.read(currentControllerProvider)?.groupController.resume();
+        break;
+      case AppLifecycleState.inactive:
+        ref.read(currentControllerProvider)?.groupController.pause();
+        break;
+      default:
+        {}
+    }
   }
 
   //音频输出到耳机(有线/无线/蓝牙)
