@@ -47,9 +47,9 @@ class _VideoControlWidgetState extends State<HomeVideoControlWidget> {
               return IconButton(
                 onPressed: () {
                   if (controller.playState == TXPlayerState.paused) {
-                    controller.resume();
+                    controller.groupController.resume();
                   } else {
-                    controller.pause();
+                    controller.groupController.pause();
                   }
                 },
                 icon: Icon(

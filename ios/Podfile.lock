@@ -1,27 +1,43 @@
 PODS:
+  - audio_session (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
+  - fluttertoast (0.0.2):
+    - Flutter
+    - Toast
   - super_player (12.2.0):
     - Flutter
     - TXLiteAVSDK_Player (= 12.2.16945)
+  - Toast (4.1.1)
   - TXLiteAVSDK_Player (12.2.16945)
 
 DEPENDENCIES:
+  - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - Flutter (from `Flutter`)
+  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - super_player (from `.symlinks/plugins/super_player/ios`)
 
 SPEC REPOS:
   trunk:
+    - Toast
     - TXLiteAVSDK_Player
 
 EXTERNAL SOURCES:
+  audio_session:
+    :path: ".symlinks/plugins/audio_session/ios"
   Flutter:
     :path: Flutter
+  fluttertoast:
+    :path: ".symlinks/plugins/fluttertoast/ios"
   super_player:
     :path: ".symlinks/plugins/super_player/ios"
 
 SPEC CHECKSUMS:
+  audio_session: 088d2483ebd1dc43f51d253d4a1c517d9a2e7207
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  fluttertoast: e9a18c7be5413da53898f660530c56f35edfba9c
   super_player: e7f1c8169927d5a9c720d7f1f56f95ee11854e03
+  Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
   TXLiteAVSDK_Player: 87ced214e008f6e62fcfd794ddbaa23a86a2893b
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796

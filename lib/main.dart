@@ -5,6 +5,7 @@ import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/home/home_page.dart';
 import 'package:video_player/my_navigator_observer.dart';
+import 'package:video_player/provider/audio_session_provider.dart';
 import 'package:video_player/widget/buffering_widget.dart';
 
 void main() async {
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     baseContext = context;
+    readProvider(audioSessionProvider);
     return ScreenUtilInit(
       builder: (_ , child) {
         return MaterialApp(

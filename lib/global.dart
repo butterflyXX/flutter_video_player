@@ -54,3 +54,17 @@ class SubVideoNotifier extends Notifier<bool> {
     return true;
   }
 }
+
+final currentControllerProvider = NotifierProvider<CurrentControllerProviderNotifier, VideoPlayerController?>(CurrentControllerProviderNotifier.new);
+
+class CurrentControllerProviderNotifier extends Notifier<VideoPlayerController?> {
+  @override
+  VideoPlayerController? build() {
+    return null;
+  }
+
+  Future<void> setState(VideoPlayerController? controller) async {
+    await state?.groupController.pause();
+    state = controller;
+  }
+}

@@ -23,11 +23,11 @@ class VideoListController {
   VoidCallback? onPlayFinished;
 
   setCurrentVideoPlayerController({VideoPlayerController? controller}) async {
-    await currentController?.pause();
+    readProvider(currentControllerProvider.notifier).setState(controller);
     if (controller != null) {
       currentController = controller;
       await controller.waitCanResume();
-      if (currentController == controller) controller.resume();
+      if (currentController == controller) resume();
       playStart();
     }
   }
@@ -114,5 +114,18 @@ class VideoListController {
 
   playFinished() {
     onPlayFinished?.call();
+  }
+
+  ///当前播放器的一些操作
+  Future<void> pause() async {
+    return currentController?.pause();
+  }
+
+  Future<void> resume() async {
+    return currentController?.resume();
+  }
+
+  Future<void> seek(double progress) async {
+    return currentController?.seek(progress);
   }
 }

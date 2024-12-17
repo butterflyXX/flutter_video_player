@@ -40,6 +40,8 @@ dependencies:
   dart_scope_functions: 0.1.7
   collection: 1.18.0
   flutter_screenutil: ^5.9.3
+  audio_session: ^0.1.23
+  fluttertoast: ^8.2.10
 
 dev_dependencies:
   flutter_test:
