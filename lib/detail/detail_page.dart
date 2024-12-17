@@ -15,11 +15,9 @@ const detailPageRoute = '/detailPageRoute';
 
 class DetailPage extends ConsumerStatefulWidget {
   final SeriesModel model;
-  final VideoListController? listController;
 
   const DetailPage({
     required this.model,
-    this.listController,
     super.key,
   });
 
@@ -29,7 +27,8 @@ class DetailPage extends ConsumerStatefulWidget {
 
 class _DetailPageState extends ConsumerState<DetailPage> {
   late PageController _pageController;
-  late final VideoListController _listController = widget.listController ?? VideoListController();
+
+  VideoListController get subController => ref.read(subVideoListProvider.notifier).listController;
 
   VideoListController get controller => ref.read(homeVideoListProvider.notifier).listController;
 
@@ -39,13 +38,13 @@ class _DetailPageState extends ConsumerState<DetailPage> {
     final index = widget.model.episodeList.indexOf(item);
     _pageController = PageController(initialPage: index);
     setCurrentVideoPlayerController(index);
-    widget.listController?.onPlayStart = () {
-      widget.listController?.currentController?.url.let((url) {
+    subController.onPlayStart = () {
+      subController.currentController?.url.let((url) {
         print('2开始播放 url: $url');
       });
     };
-    widget.listController?.onPlayFinished = () {
-      widget.listController?.currentController?.url.let((url) {
+    subController.onPlayFinished = () {
+      subController.currentController?.url.let((url) {
         //判断是否是最后一集
         final lastUrl = widget.model.episodeList.last.videoUrl;
         if (lastUrl == url) {
@@ -65,8 +64,8 @@ class _DetailPageState extends ConsumerState<DetailPage> {
 
   void setCurrentVideoPlayerController(int index) {
     final item = widget.model.episodeList[index];
-    final current = _listController.getController(item.videoUrl);
-    _listController.setCurrentVideoPlayerController(current);
+    final current = subController.getController(item.videoUrl);
+    subController.setCurrentVideoPlayerController(current);
     final old = widget.model.episode.videoUrl;
     if (old != item.videoUrl) {
       widget.model.episode = item;
@@ -86,7 +85,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
         itemBuilder: (context, index) {
           final model = widget.model.episodeList[index];
           return PlayItem(
-            listController: _listController,
+            listController: subController,
             model: model,
             controlBuilder: (context, controller) {
               return VideoControlWidget(controller: controller,);

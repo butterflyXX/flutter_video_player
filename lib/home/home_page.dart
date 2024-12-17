@@ -1,13 +1,11 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:super_player/super_player.dart';
 import 'package:video_player/detail/detail_page.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/model/series_model.dart';
 import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/source.dart';
-import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/widget/home_video_control_widget.dart';
 import 'package:video_player/widget/play_item.dart';
@@ -23,6 +21,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
   final _pageController = PageController();
 
   VideoListController get controller => ref.read(homeVideoListProvider.notifier).listController;
+
   VideoListController get subController => ref.read(subVideoListProvider.notifier).listController;
 
   @override
@@ -88,7 +87,9 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
               listController: controller,
               model: model.episode,
               controlBuilder: (context, controller) {
-                return HomeVideoControlWidget(controller: controller,);
+                return HomeVideoControlWidget(
+                  controller: controller,
+                );
               },
             ),
           );
@@ -123,10 +124,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
       MaterialPageRoute(
         settings: const RouteSettings(name: detailPageRoute),
         builder: (_) {
-          return DetailPage(
-            model: model,
-            listController: subController,
-          );
+          return DetailPage(model: model);
         },
       ),
     );
