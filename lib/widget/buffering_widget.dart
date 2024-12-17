@@ -74,7 +74,12 @@ class LoadingEffectPainter extends CustomPainter {
     double rightX = centerX + progress * centerX;
 
     // 渐隐效果
-    double opacity = 1 - progress;
+    double opacity = 0;
+    if (progress <= 0.5) {
+      opacity = progress * 2;
+    } else {
+      opacity = 2 - progress * 2;
+    }
 
     paint.color = Colors.white.withOpacity(opacity);
 
