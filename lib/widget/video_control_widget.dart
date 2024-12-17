@@ -47,7 +47,7 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                         showModalBottomSheet(
                           context: context,
                           builder: (context) {
-                            const speeds = <double>[0.25, 0.5, 1, 1.5, 2];
+                            const speeds = <double>[0.25, 0.5, 1, 1.5, 2, 2.5, 3];
                             return SpeedDialog(
                               source: speeds,
                               selected: speed,
