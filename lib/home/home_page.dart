@@ -102,7 +102,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
   @override
   void didPopNext() {
     subController.currentController?.let((it) async {
-      await subController.pause();
+      readProvider(currentControllerProvider.notifier).setState(controller.currentController);
       await it.position.value.let((position) async => await controller.seek(position));
       controller.resume();
       subController.clearExcept(controller: it);
@@ -113,9 +113,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
   void didPushNext() {
     controller.currentController?.let((it) async {
       await Future.delayed(Durations.short1);
-      await controller.pause();
       await it.position.value.let((position) async => await subController.seek(position));
-      subController.resume();
     });
   }
 

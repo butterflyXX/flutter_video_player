@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_player/super_player.dart';
@@ -6,10 +7,10 @@ import 'package:video_player/global.dart';
 import 'package:video_player/home/home_page.dart';
 import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/provider/audio_session_provider.dart';
-import 'package:video_player/widget/buffering_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
   String licenceURL = "https://license.vod2.myqcloud.com/license/v2/1311477396_1/v_cube.license"; // 获取到的 licence url
   String licenceKey = "616d85285280f69e09ccd76bb05f2394"; // 获取到的 licence key
   await SuperPlayerPlugin.setGlobalLicense(licenceURL, licenceKey);

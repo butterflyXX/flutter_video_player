@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
+import 'package:video_player/util/safe_size.dart';
 import 'package:video_player/video_player_controller.dart';
 import 'package:video_player/widget/progress_bar.dart';
 import 'package:video_player/widget/speed_dialog.dart';
@@ -88,7 +89,7 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
               ],
             ),
             SizedBox(
-              height: ScreenUtil().bottomBarHeight,
+              height: SafeSize.bottomBarHeight(),
             ),
           ],
         ),

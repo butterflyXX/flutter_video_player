@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/util/safe_size.dart';
 
 class SpeedDialog<T> extends StatelessWidget {
   final List<T> source;
@@ -31,7 +32,7 @@ class SpeedDialog<T> extends StatelessWidget {
               child: _item(index),
             );
           }),
-          SafeArea(child: Container()),
+          SizedBox(height: SafeSize.bottomBarHeight(),),
         ],
       ),
     );

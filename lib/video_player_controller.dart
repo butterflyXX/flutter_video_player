@@ -89,9 +89,9 @@ class VideoPlayerController extends TXVodPlayerController {
         //播放进度
 
         // 视频总长, 单位是秒
-        duration = event[TXVodPlayEvent.EVT_PLAY_DURATION];
+        duration = event[TXVodPlayEvent.EVT_PLAY_DURATION].toDouble();
         // 播放进度, 单位是秒
-        position.value = event[TXVodPlayEvent.EVT_PLAY_PROGRESS];
+        position.value = event[TXVodPlayEvent.EVT_PLAY_PROGRESS].toDouble();
       }
 
       if (event['event'] == TXVodPlayEvent.PLAY_EVT_PLAY_END) {
