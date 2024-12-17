@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+
 class AdItemModel {
-  bool hasWatched = false;
+  final watchCount = ValueNotifier(5);
+
 }

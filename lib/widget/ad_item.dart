@@ -23,7 +23,10 @@ class _AdItemState extends State<AdItem> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('广告位'),
-            Text(widget.model.hasWatched ? '广告已播放,可以滑动' : '广告未播放')
+            ValueListenableBuilder(valueListenable: widget.model.watchCount, builder: (context, watchCount, _) {
+              return Text(widget.model.watchCount.value <= 0 ? '广告已播放,可以滑动' : '广告播放中,${widget.model.watchCount.value}s 后可滑动');
+            })
+
           ],
         ),
       ),

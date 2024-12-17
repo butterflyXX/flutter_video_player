@@ -50,7 +50,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
       }
     }
 
-    final item = dataList.firstWhere((it) => it.videoUrl == widget.model.episode.videoUrl);
+    final item = widget.model.episodeList.firstWhere((it) => it.videoUrl == widget.model.episode.videoUrl);
     final index = dataList.indexOf(item);
     _pageController = PageController(initialPage: index);
     setCurrentVideoPlayerController(index);
@@ -89,12 +89,11 @@ class _DetailPageState extends ConsumerState<DetailPage> {
         controller.replaceController(old, item.videoUrl);
       }
     } else {
-      if (item is AdItemModel && !item.hasWatched) {
-        ref.read(detailProvider(widget.model.id).notifier).setScroll(false);
+      if (item is AdItemModel && item.watchCount.value != 0) {
+        ref.read(detailProvider(widget.model.id).notifier).countDownAdItem(item);
       }
       subController.setCurrentVideoPlayerController();
     }
-
   }
 
   @override
