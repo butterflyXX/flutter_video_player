@@ -40,7 +40,6 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
           ),
           home: child!,
-          navigatorObservers: [pageRouter],
         );
       },
       child: const HomePage(),

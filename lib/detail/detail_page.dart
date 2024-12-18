@@ -1,4 +1,3 @@
-
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +32,6 @@ class DetailPage extends ConsumerStatefulWidget {
 }
 
 class _DetailPageState extends ConsumerState<DetailPage> {
-
   late final vm = ref.read(detailDataProvider.notifier);
 
   @override
@@ -62,9 +60,13 @@ class _DetailPageState extends ConsumerState<DetailPage> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   /// 模拟请求剧
   Future<void> load() async {
-    print('[load] 加载剧');
     await Future.delayed(Durations.short1);
     final model = data.firstWhere((item) => item.id == widget.seriesId);
 
@@ -75,7 +77,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
 
       // 模拟广告位插入
       if (index == 2 || index == 8 || index == 12 || index == 17 || index == 24 || index == 33) {
-        vm.dataList.insert(baseIndex + index+1, AdItemModel());
+        vm.dataList.insert(baseIndex + index + 1, AdItemModel());
       }
     }
     final item = model.episodeList.firstWhere((it) => it.videoUrl == model.episode.videoUrl);
@@ -83,14 +85,12 @@ class _DetailPageState extends ConsumerState<DetailPage> {
     vm.pageController = PageController(initialPage: index);
     await setCurrentVideoPlayerController(index);
     if (widget.initPosition != null) {
-      print('[set seek]');
       await detailVideoController.currentController?.seek(widget.initPosition!);
     }
     setState(() {});
   }
 
   Future<void> loadNext() async {
-    print('[loadNext] 加载下一部剧');
     // 模拟请求下一部剧
     await Future.delayed(Durations.extralong4);
     final model = data.firstWhere((item) => item.id == widget.seriesId);
@@ -103,17 +103,10 @@ class _DetailPageState extends ConsumerState<DetailPage> {
       final index = next.episodeList.indexOf(item);
       // 模拟广告位插入
       if (index == 2 || index == 8 || index == 12 || index == 17 || index == 24 || index == 33) {
-        vm.dataList.insert(baseIndex + index+1, AdItemModel());
+        vm.dataList.insert(baseIndex + index + 1, AdItemModel());
       }
     }
-    setState(() {
-
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    setState(() {});
   }
 
   Future<void> setCurrentVideoPlayerController(int index) async {
@@ -132,35 +125,49 @@ class _DetailPageState extends ConsumerState<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: vm.pageController != null ? Consumer(
-        builder: (context, ref, child) {
-          final canScroll = ref.watch(detailProvider(widget.seriesId));
-          return PageView.builder(
-            allowImplicitScrolling: true,
-            controller: vm.pageController,
-            physics: canScroll ? null : const NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            itemCount: vm.dataList.length,
-            itemBuilder: (context, index) {
-              final model = vm.dataList[index];
-              if (model is ItemModel) {
-                return PlayItem(
-                  listController: detailVideoController,
-                  model: model,
-                  controlBuilder: (context, controller) {
-                    return VideoControlWidget(controller: controller,);
-                  },
-                );
-              } else {
-                return AdItem(model: model);
-              }
-            },
-            onPageChanged: setCurrentVideoPlayerController,
-          );
-        },
-      ) : Container(),
+    return PopScope(
+      onPopInvoked: (canPop) {
+        detailVideoController.currentController?.let((it) async {
+          readProvider(currentControllerProvider.notifier).setState(homeVideoController.currentController);
+          await it.position.value.let((position) async => await homeVideoController.seek(position));
+          homeVideoController.resume();
+          detailVideoController.clear();
+        });
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: vm.pageController != null
+            ? Consumer(
+                builder: (context, ref, child) {
+                  final canScroll = ref.watch(detailProvider(widget.seriesId));
+                  return PageView.builder(
+                    allowImplicitScrolling: true,
+                    controller: vm.pageController,
+                    physics: canScroll ? null : const NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    itemCount: vm.dataList.length,
+                    itemBuilder: (context, index) {
+                      final model = vm.dataList[index];
+                      if (model is ItemModel) {
+                        return PlayItem(
+                          listController: detailVideoController,
+                          model: model,
+                          controlBuilder: (context, controller) {
+                            return VideoControlWidget(
+                              controller: controller,
+                            );
+                          },
+                        );
+                      } else {
+                        return AdItem(model: model);
+                      }
+                    },
+                    onPageChanged: setCurrentVideoPlayerController,
+                  );
+                },
+              )
+            : Container(),
+      ),
     );
   }
 }

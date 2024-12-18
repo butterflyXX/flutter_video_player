@@ -1,13 +1,9 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:video_player/detail/detail_page.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/home/home_data_provider.dart';
-import 'package:video_player/model/series_model.dart';
 import 'package:video_player/my_navigator_observer.dart';
-import 'package:video_player/source.dart';
-import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/widget/home_video_control_widget.dart';
 import 'package:video_player/widget/play_item.dart';
 
@@ -23,15 +19,11 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
   @override
   void initState() {
     loadData();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      pageRouter.subscribe(this, ModalRoute.of(context));
-    });
     super.initState();
   }
 
   @override
   void dispose() {
-    pageRouter.unsubscribe(this);
     super.dispose();
   }
 
@@ -73,15 +65,5 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
         onPageChanged: vm.setCurrentVideoPlayerController,
       ),
     );
-  }
-
-  @override
-  void didPopNext() {
-    detailVideoController.currentController?.let((it) async {
-      readProvider(currentControllerProvider.notifier).setState(homeVideoController.currentController);
-      await it.position.value.let((position) async => await homeVideoController.seek(position));
-      homeVideoController.resume();
-      detailVideoController.clear();
-    });
   }
 }

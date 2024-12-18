@@ -102,5 +102,3 @@ mixin TGRouteAware {
 
   void cancelPopFromNext() {}
 }
-
-TGRouteObserver pageRouter = TGRouteObserver();
