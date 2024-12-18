@@ -46,7 +46,6 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
   Future<void> load({double? position}) async {
     await Future.delayed(Durations.short1);
     final model = data.firstWhere((item) => item.id == seriesId);
-    firstSeriesMaxIndex = model.episodeList.length;
     final newData = [];
     for (var item in model.episodeList) {
       final index = model.episodeList.indexOf(item);
@@ -59,6 +58,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
     }
     final item = model.episodeList.firstWhere((it) => it.videoUrl == model.episode.videoUrl);
     final index = newData.indexOf(item);
+    firstSeriesMaxIndex = newData.length;
     dataList.value = newData;
     pageController = PageController(initialPage: index);
     await setCurrentVideoPlayerController(index);
