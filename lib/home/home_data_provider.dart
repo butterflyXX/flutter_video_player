@@ -34,6 +34,8 @@ class HomeDataProviderNotifier extends AutoDisposeNotifier<bool> {
           Future.delayed(Durations.medium1).then((_) {
             homeVideoController.replaceController(url, needItem.videoUrl);
           });
+        } else {
+          homeVideoController.currentController?.resume();
         }
       });
     };
