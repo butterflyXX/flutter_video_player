@@ -1,5 +1,6 @@
 class ItemModel {
   final String id;
+  final String seriesId;
   final String name;
   final String cover;
   final String videoUrl;
@@ -17,6 +18,7 @@ class ItemModel {
 
   ItemModel({
     required this.id,
+    required this.seriesId,
     required this.name,
     required this.cover,
     required this.videoUrl,
@@ -35,6 +37,7 @@ class ItemModel {
 
   factory ItemModel.fromJson(Map<String, dynamic> json) => ItemModel(
     id: json["id"],
+    seriesId: json["series_id"],
     name: json["name"],
     cover: json["cover"],
     videoUrl: json["video_url"],
@@ -53,6 +56,7 @@ class ItemModel {
 
   Map<String, dynamic> toJson() => {
     "id": id,
+    "series_id": seriesId,
     "name": name,
     "cover": cover,
     "video_url": videoUrl,

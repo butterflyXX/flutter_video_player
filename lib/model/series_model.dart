@@ -86,7 +86,7 @@ class SeriesModel {
     "lang": lang,
     "pay_mode": payMode,
     "free": free,
-    "episode_list": List<dynamic>.from(episodeList.map((x) => x)),
+    "episode_list": List<dynamic>.from(episodeList.map((x) => x.toJson())),
     "episode": episode.toJson(),
     "_": empty,
   };
