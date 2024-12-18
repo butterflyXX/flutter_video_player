@@ -56,7 +56,11 @@ class _DetailPageState extends ConsumerState<DetailPage> {
     setCurrentVideoPlayerController(index);
     subController.onPlayStart = () {
       subController.currentController?.url.let((url) {
-        print('2开始播放 url: $url');
+        final lastUrl = dataList.last.videoUrl;
+        if (lastUrl == url) {
+          // 最后一集播放开始
+          loadNext();
+        }
       });
     };
     subController.onPlayFinished = () {
@@ -71,6 +75,27 @@ class _DetailPageState extends ConsumerState<DetailPage> {
       });
     };
     super.initState();
+  }
+
+  Future<void> loadNext() async {
+    print('[loadNext] 加载下一部剧');
+    // 模拟请求下一部剧
+    await Future.delayed(Durations.extralong4);
+    final nextIndex = (data.indexOf(widget.model) + 1) % data.length;
+    final next = data[nextIndex];
+
+    final baseIndex = dataList.length;
+    for (var item in next.episodeList) {
+      dataList.add(item);
+      final index = next.episodeList.indexOf(item);
+      // 模拟广告位插入
+      if (index == 2 || index == 8 || index == 12 || index == 17 || index == 24 || index == 33) {
+        dataList.insert(baseIndex + index+1, AdItemModel());
+      }
+    }
+    setState(() {
+
+    });
   }
 
   @override
