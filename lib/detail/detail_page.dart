@@ -62,6 +62,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
 
   @override
   void dispose() {
+    detailVideoController.clear();
     super.dispose();
   }
 
@@ -131,7 +132,6 @@ class _DetailPageState extends ConsumerState<DetailPage> {
           readProvider(currentControllerProvider.notifier).setState(homeVideoController.currentController);
           await it.position.value.let((position) async => await homeVideoController.seek(position));
           homeVideoController.resume();
-          detailVideoController.clear();
         });
       },
       child: Scaffold(

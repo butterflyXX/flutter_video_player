@@ -10,7 +10,7 @@ import 'package:video_player/source.dart';
 final homeDataProvider = AutoDisposeNotifierProvider<HomeDataProviderNotifier, bool>(HomeDataProviderNotifier.new);
 
 class HomeDataProviderNotifier extends AutoDisposeNotifier<bool> {
-  List dataList = [];
+  final dataList = ValueNotifier<List<SeriesModel>>([]);
   SeriesModel? _current;
   PageController pageController = PageController();
   @override
@@ -24,13 +24,13 @@ class HomeDataProviderNotifier extends AutoDisposeNotifier<bool> {
       homeVideoController.currentController?.url.let((url) {
         //寻找当前下一集
         final pageIndex = pageController.page!.round();
-        final model = dataList[pageIndex];
+        final model = dataList.value[pageIndex];
         final currentIndex = model.episodeList.indexWhere((item) => item.videoUrl == url);
         if (currentIndex < model.episodeList.length - 1) {
           //说明后面还有剧
           final needItem = model.episodeList[currentIndex + 1];
           model.episode = needItem;
-          pushDetail(model);
+          pushDetail(model.id);
           Future.delayed(Durations.medium1).then((_) {
             homeVideoController.replaceController(url, needItem.videoUrl);
           });
@@ -42,7 +42,8 @@ class HomeDataProviderNotifier extends AutoDisposeNotifier<bool> {
 
   loadData() async {
     await Future.delayed(const Duration(seconds: 3));
-    dataList = data;
+    dataList.value = data;
+    setCurrentVideoPlayerController(0);
   }
 
   updateCurrentData(ItemModel model) {
@@ -57,8 +58,8 @@ class HomeDataProviderNotifier extends AutoDisposeNotifier<bool> {
   }
 
   void setCurrentVideoPlayerController(index) {
-    _current = dataList[index];
-    final url = dataList[index].episode.videoUrl;
+    _current = dataList.value[index];
+    final url = dataList.value[index].episode.videoUrl;
     final current = homeVideoController.getController(url);
     homeVideoController.setCurrentVideoPlayerController(controller: current);
   }

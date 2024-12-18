@@ -18,7 +18,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
   late final vm = ref.read(homeDataProvider.notifier);
   @override
   void initState() {
-    loadData();
+    vm.loadData();
     super.initState();
   }
 
@@ -27,43 +27,37 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
     super.dispose();
   }
 
-  void loadData() async {
-    await vm.loadData();
-    vm.setCurrentVideoPlayerController(0);
-    setState(() {
-
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     ref.watch(homeDataProvider);
     return Scaffold(
       backgroundColor: Colors.black,
-      body: PageView.builder(
-        allowImplicitScrolling: true,
-        controller: vm.pageController,
-        scrollDirection: Axis.vertical,
-        itemCount: vm.dataList.length,
-        itemBuilder: (context, index) {
-          final model = vm.dataList[index];
-          return GestureDetector(
-            onTap: () {
-              vm.pushDetail(model.id, position: homeVideoController.currentController!.position.value);
-            },
-            child: PlayItem(
-              listController: homeVideoController,
-              model: model.episode,
-              controlBuilder: (context, controller) {
-                return HomeVideoControlWidget(
-                  controller: controller,
-                );
+      body: ValueListenableBuilder(valueListenable: vm.dataList, builder: (context, dataList, _) {
+        return PageView.builder(
+          allowImplicitScrolling: true,
+          controller: vm.pageController,
+          scrollDirection: Axis.vertical,
+          itemCount: dataList.length,
+          itemBuilder: (context, index) {
+            final model = dataList[index];
+            return GestureDetector(
+              onTap: () {
+                vm.pushDetail(model.id, position: homeVideoController.currentController!.position.value);
               },
-            ),
-          );
-        },
-        onPageChanged: vm.setCurrentVideoPlayerController,
-      ),
+              child: PlayItem(
+                listController: homeVideoController,
+                model: model.episode,
+                controlBuilder: (context, controller) {
+                  return HomeVideoControlWidget(
+                    controller: controller,
+                  );
+                },
+              ),
+            );
+          },
+          onPageChanged: vm.setCurrentVideoPlayerController,
+        );
+      }),
     );
   }
 }
