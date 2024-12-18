@@ -109,7 +109,8 @@ class _DetailPageState extends ConsumerState<DetailPage> {
       final current = subController.getController(item.videoUrl);
       subController.setCurrentVideoPlayerController(controller: current);
       final old = widget.model.episode.videoUrl;
-      if (old != item.videoUrl) {
+      final isSameSeries = widget.model.id == item.seriesId;
+      if (isSameSeries && old != item.videoUrl) {
         widget.model.episode = item;
         controller.replaceController(old, item.videoUrl);
       }
