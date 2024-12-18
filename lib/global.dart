@@ -1,10 +1,12 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:video_player/model/series_model.dart';
 import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/video_player_controller.dart';
 
 late BuildContext baseContext;
+final navigatorKey = GlobalKey<NavigatorState>();
 
 const color = Color(0xFFFDFBFC);
 int count = 0;
@@ -32,28 +34,8 @@ class PositionModel {
   }
 }
 
-final homeVideoListProvider = NotifierProvider<HomeVideoNotifier, bool>(HomeVideoNotifier.new);
-
-class HomeVideoNotifier extends Notifier<bool> {
-  VideoListController listController = VideoListController();
-
-  @override
-  bool build() {
-    return true;
-  }
-}
-
-final subVideoListProvider = NotifierProvider<SubVideoNotifier, bool>(SubVideoNotifier.new);
-
-class SubVideoNotifier extends Notifier<bool> {
-  late VideoListController listController;
-
-  @override
-  bool build() {
-    listController = VideoListController();
-    return true;
-  }
-}
+final homeVideoController = VideoListController();
+final detailVideoController = VideoListController();
 
 final currentControllerProvider = NotifierProvider<CurrentControllerProviderNotifier, VideoPlayerController?>(CurrentControllerProviderNotifier.new);
 

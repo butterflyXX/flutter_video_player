@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
       builder: (_ , child) {
         return MaterialApp(
           title: 'Flutter Video List Demo',
+          navigatorKey: navigatorKey,
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/detail/detail_page.dart';
 import 'package:video_player/global.dart';
+import 'package:video_player/home/home_data_provider.dart';
 import 'package:video_player/model/series_model.dart';
 import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/source.dart';
@@ -18,41 +19,14 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
-  final _pageController = PageController();
-
-  VideoListController get controller => ref.read(homeVideoListProvider.notifier).listController;
-
-  VideoListController get subController => ref.read(subVideoListProvider.notifier).listController;
-
+  late final vm = ref.read(homeDataProvider.notifier);
   @override
   void initState() {
-    setCurrentVideoPlayerController(0);
-    super.initState();
+    loadData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       pageRouter.subscribe(this, ModalRoute.of(context));
     });
-    controller.onPlayStart = () {
-      controller.currentController?.url.let((url) {
-        print('开始播放 url: $url');
-      });
-    };
-    controller.onPlayFinished = () {
-      controller.currentController?.url.let((url) {
-        //寻找当前下一集
-        final pageIndex = _pageController.page!.round();
-        final model = data[pageIndex];
-        final currentIndex = model.episodeList.indexWhere((item) => item.videoUrl == url);
-        if (currentIndex < model.episodeList.length - 1) {
-          //说明后面还有剧
-          final needItem = model.episodeList[currentIndex + 1];
-          model.episode = needItem;
-          pushDetail(model);
-          Future.delayed(Durations.medium1).then((_) {
-            controller.replaceController(url, needItem.videoUrl);
-          });
-        }
-      });
-    };
+    super.initState();
   }
 
   @override
@@ -61,30 +35,32 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
     super.dispose();
   }
 
-  void setCurrentVideoPlayerController(index) {
-    final url = data[index].episode.videoUrl;
-    final current = controller.getController(url);
-    controller.setCurrentVideoPlayerController(controller: current);
-    subController.cacheDetailController(url);
+  void loadData() async {
+    await vm.loadData();
+    vm.setCurrentVideoPlayerController(0);
+    setState(() {
+
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(homeDataProvider);
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageView.builder(
         allowImplicitScrolling: true,
-        controller: _pageController,
+        controller: vm.pageController,
         scrollDirection: Axis.vertical,
-        itemCount: data.length,
+        itemCount: vm.dataList.length,
         itemBuilder: (context, index) {
-          final model = data[index];
+          final model = vm.dataList[index];
           return GestureDetector(
             onTap: () {
-              pushDetail(model);
+              vm.pushDetail(model.id, position: homeVideoController.currentController!.position.value);
             },
             child: PlayItem(
-              listController: controller,
+              listController: homeVideoController,
               model: model.episode,
               controlBuilder: (context, controller) {
                 return HomeVideoControlWidget(
@@ -94,37 +70,18 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
             ),
           );
         },
-        onPageChanged: setCurrentVideoPlayerController,
+        onPageChanged: vm.setCurrentVideoPlayerController,
       ),
     );
   }
 
   @override
   void didPopNext() {
-    subController.currentController?.let((it) async {
-      readProvider(currentControllerProvider.notifier).setState(controller.currentController);
-      await it.position.value.let((position) async => await controller.seek(position));
-      controller.resume();
-      subController.clearExcept(controller: it);
+    detailVideoController.currentController?.let((it) async {
+      readProvider(currentControllerProvider.notifier).setState(homeVideoController.currentController);
+      await it.position.value.let((position) async => await homeVideoController.seek(position));
+      homeVideoController.resume();
+      detailVideoController.clear();
     });
-  }
-
-  @override
-  void didPushNext() {
-    controller.currentController?.let((it) async {
-      await Future.delayed(Durations.short1);
-      await it.position.value.let((position) async => await subController.seek(position));
-    });
-  }
-
-  pushDetail(SeriesModel model) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        settings: const RouteSettings(name: detailPageRoute),
-        builder: (_) {
-          return DetailPage(model: model);
-        },
-      ),
-    );
   }
 }

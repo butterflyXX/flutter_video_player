@@ -59,7 +59,7 @@ class VideoListController {
   VideoPlayerController cacheDetailController(String url) {
     currentBitrate.value = null;
     speed.value = 1;
-    clearExcept();
+    clear();
     return getController(url);
   }
 
@@ -80,13 +80,11 @@ class VideoListController {
   }
 
   /// 清空播放器列表,只留一个当前返回时正在播放的控制器
-  clearExcept({VideoPlayerController? controller}) {
+  clear() {
     final keys = _controllers.keys.toList();
     for (final key in keys) {
       final target = _controllers[key]!;
-      if (target != controller) {
-        disposeController(target);
-      }
+      disposeController(target);
     }
   }
 
