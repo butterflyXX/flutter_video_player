@@ -15,6 +15,8 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
   PageController? pageController;
   late String seriesId;
   dynamic _current;
+
+  int firstSeriesMaxIndex = 0;
   @override
   bool build() {
     detailVideoController.onPlayStart = () {
@@ -44,7 +46,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
   Future<void> load({double? position}) async {
     await Future.delayed(Durations.short1);
     final model = data.firstWhere((item) => item.id == seriesId);
-
+    firstSeriesMaxIndex = model.episodeList.length;
     final newData = [];
     for (var item in model.episodeList) {
       final index = model.episodeList.indexOf(item);
@@ -86,9 +88,14 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
 
   Future<void> setCurrentVideoPlayerController(int index) async {
     final item = dataList.value[index];
+    final last = _current;
     _current = item;
     if (item is ItemModel) {
       final current = detailVideoController.getController(item.videoUrl);
+      if (last is ItemModel && (last.seriesId == seriesId && item.seriesId != seriesId)) {
+        //开始播放下一部剧,同步上一部剧播放进度
+        homeVideoController.currentController?.seek(detailVideoController.currentController!.position.value);
+      }
       await detailVideoController.setCurrentVideoPlayerController(controller: current);
       ref.read(homeDataProvider.notifier).updateCurrentData(item);
     } else {
@@ -97,5 +104,14 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
       }
       await detailVideoController.setCurrentVideoPlayerController();
     }
+
+  }
+
+  bool isInitSeries() {
+    final currentIndex = dataList.value.indexOf(_current);
+    if (currentIndex < firstSeriesMaxIndex) {
+      return true;
+    }
+    return false;
   }
 }
