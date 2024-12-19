@@ -62,60 +62,54 @@ class _DetailPageState extends ConsumerState<DetailPage> {
         backgroundColor: Colors.black,
         body: Stack(
           children: [
-            Column(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.w), bottomRight: Radius.circular(10.w)),
-                    child: ValueListenableBuilder(
-                      valueListenable: vm.dataList,
-                      builder: (context, dataList, _) {
-                        if (dataList.isEmpty) {
-                          return Container();
+            ValueListenableBuilder(
+              valueListenable: vm.dataList,
+              builder: (context, dataList, _) {
+                if (dataList.isEmpty) {
+                  return Container();
+                }
+                return Consumer(
+                  builder: (context, ref, child) {
+                    final canScroll = ref.watch(detailProvider(widget.seriesId));
+                    return PageView.builder(
+                      allowImplicitScrolling: true,
+                      controller: vm.pageController,
+                      physics: canScroll ? null : const NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.vertical,
+                      itemCount: dataList.length,
+                      itemBuilder: (context, index) {
+                        final model = dataList[index];
+                        Widget child;
+                        if (model is ItemModel) {
+                          child = PlayItem(
+                            listController: detailVideoController,
+                            model: model,
+                            controlBuilder: (context, controller) {
+                              return VideoControlWidget(
+                                controller: controller,
+                              );
+                            },
+                          );
+                        } else {
+                          child = AdItem(model: model);
                         }
-                        return Consumer(
-                          builder: (context, ref, child) {
-                            final canScroll = ref.watch(detailProvider(widget.seriesId));
-                            return PageView.builder(
-                              allowImplicitScrolling: true,
-                              controller: vm.pageController,
-                              physics: canScroll ? null : const NeverScrollableScrollPhysics(),
-                              scrollDirection: Axis.vertical,
-                              itemCount: dataList.length,
-                              itemBuilder: (context, index) {
-                                final model = dataList[index];
-                                Widget child;
-                                if (model is ItemModel) {
-                                  child = PlayItem(
-                                    listController: detailVideoController,
-                                    model: model,
-                                    controlBuilder: (context, controller) {
-                                      return VideoControlWidget(
-                                        controller: controller,
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  child = AdItem(model: model);
-                                }
-                                return Column(
-                                  children: [
-                                    Expanded(
-                                      child: child,
-                                    ),
-                                    bottomWidget(),
-                                  ],
-                                );
-                              },
-                              onPageChanged: vm.setCurrentVideoPlayerController,
-                            );
-                          },
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.w), bottomRight: Radius.circular(10.w)),
+                                child: child,
+                              ),
+                            ),
+                            bottomWidget(),
+                          ],
                         );
                       },
-                    ),
-                  ),
-                ),
-              ],
+                      onPageChanged: vm.setCurrentVideoPlayerController,
+                    );
+                  },
+                );
+              },
             ),
             appbar(),
           ],
