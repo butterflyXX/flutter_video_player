@@ -84,8 +84,9 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                               itemCount: dataList.length,
                               itemBuilder: (context, index) {
                                 final model = dataList[index];
+                                Widget child;
                                 if (model is ItemModel) {
-                                  return PlayItem(
+                                  child = PlayItem(
                                     listController: detailVideoController,
                                     model: model,
                                     controlBuilder: (context, controller) {
@@ -95,8 +96,16 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                                     },
                                   );
                                 } else {
-                                  return AdItem(model: model);
+                                  child = AdItem(model: model);
                                 }
+                                return Column(
+                                  children: [
+                                    Expanded(
+                                      child: child,
+                                    ),
+                                    bottomWidget(),
+                                  ],
+                                );
                               },
                               onPageChanged: vm.setCurrentVideoPlayerController,
                             );
@@ -106,7 +115,6 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                     ),
                   ),
                 ),
-                bottomWidget(),
               ],
             ),
             appbar(),
@@ -141,13 +149,18 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              '选集·全${vm.dataList.value.length}集·永久免费',
-                              style: const TextStyle(
-                                color: color,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
+                            child: ValueListenableBuilder(
+                              valueListenable: vm.currentSeries,
+                              builder: (context, currentSeries, _) {
+                                return Text(
+                                  '选集·全${currentSeries?.episodeList.length ?? 0}集·永久免费',
+                                  style: const TextStyle(
+                                    color: color,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                );
+                              },
                             ),
                           ),
                           const Icon(

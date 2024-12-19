@@ -5,6 +5,7 @@ import 'package:video_player/global.dart';
 import 'package:video_player/home/home_data_provider.dart';
 import 'package:video_player/model/ad_item_model.dart';
 import 'package:video_player/model/item_model.dart';
+import 'package:video_player/model/series_model.dart';
 import 'package:video_player/provider/detail_provider.dart';
 import 'package:video_player/source.dart';
 
@@ -15,6 +16,8 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
   PageController? pageController;
   late String seriesId;
   final current = ValueNotifier<dynamic>(null);
+  final seriesModels = <SeriesModel>[];
+  final currentSeries = ValueNotifier<SeriesModel?>(null);
 
   int firstSeriesMaxIndex = 0;
   @override
@@ -46,6 +49,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
   Future<void> load({double? position}) async {
     await Future.delayed(Durations.short1);
     final model = data.firstWhere((item) => item.id == seriesId);
+    seriesModels.add(model);
     final newData = [];
     for (var item in model.episodeList) {
       final index = model.episodeList.indexOf(item);
@@ -73,6 +77,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
     final model = data.firstWhere((item) => item.id == seriesId);
     final nextIndex = (data.indexOf(model) + 1) % data.length;
     final next = data[nextIndex];
+    seriesModels.add(next);
 
     final nextData = [];
     for (var item in next.episodeList) {
@@ -90,6 +95,9 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
     final item = dataList.value[index];
     final last = current.value;
     current.value = item;
+    if (item is ItemModel) {
+      currentSeries.value = getCurrentSeries(item.seriesId);
+    }
     if (item is ItemModel) {
       final current = detailVideoController.getController(item.videoUrl);
       if (last is ItemModel && (last.seriesId == seriesId && item.seriesId != seriesId)) {
@@ -113,5 +121,9 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
       return true;
     }
     return false;
+  }
+
+  SeriesModel getCurrentSeries(String seriesId) {
+    return seriesModels.firstWhere((item) => item.id == seriesId);
   }
 }
