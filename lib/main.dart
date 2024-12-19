@@ -7,6 +7,7 @@ import 'package:video_player/global.dart';
 import 'package:video_player/home/home_page.dart';
 import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/provider/audio_session_provider.dart';
+import 'package:video_player/util/safe_size.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,7 @@ void main() async {
   SuperPlayerPlugin.setGlobalMaxCacheSize(1024);
 //设置播放引擎的全局缓存目录
   SuperPlayerPlugin.setGlobalCacheFolderPath("postfixPath");
-  
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
     baseContext = context;
     readProvider(audioSessionProvider);
     return ScreenUtilInit(
-      builder: (_ , child) {
+      builder: (_, child) {
         return MaterialApp(
           title: 'Flutter Video List Demo',
           navigatorKey: navigatorKey,
@@ -42,7 +43,34 @@ class MyApp extends StatelessWidget {
           home: child!,
         );
       },
-      child: const HomePage(),
+      child: const Home(),
     );
   }
 }
+
+class Home extends StatelessWidget {
+  const Home({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: const HomePage(),
+      bottomNavigationBar: Container(
+        color: Colors.black,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(
+              height: 50,
+              child: Center(
+                child: Text('模拟tabbar', style: TextStyle(color: Colors.white),),
+              ),
+            ),
+            SizedBox(height: SafeSize.bottomBarHeight()),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

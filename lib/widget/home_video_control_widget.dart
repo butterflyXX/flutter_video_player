@@ -33,12 +33,6 @@ class _VideoControlWidgetState extends State<HomeVideoControlWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: ProgressBar(controller: controller),
             ),
-            SizedBox(
-              height: 50,
-            ),
-            SizedBox(
-              height: SafeSize.bottomBarHeight(),
-            ),
           ],
         ),
         Center(

@@ -29,13 +29,6 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: ProgressBar(controller: controller),
-            ),
-            SizedBox(
-              height: 20,
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -67,7 +60,7 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                   valueListenable: controller.groupController.currentBitrate,
                   builder: (context, value, _) {
                     return speedWidget(
-                       '${value?.height.toString()}P',
+                      '${value?.height.toString()}P',
                       onTap: () async {
                         showModalBottomSheet(
                           context: context,
@@ -88,8 +81,9 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                 const SizedBox(width: 20),
               ],
             ),
-            SizedBox(
-              height: SafeSize.bottomBarHeight(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: ProgressBar(controller: controller),
             ),
           ],
         ),

@@ -1,10 +1,12 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:video_player/detail/detail_data_provider.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/model/item_model.dart';
 import 'package:video_player/provider/detail_provider.dart';
+import 'package:video_player/util/safe_size.dart';
 import 'package:video_player/widget/ad_item.dart';
 import 'package:video_player/widget/play_item.dart';
 import 'package:video_player/widget/video_control_widget.dart';
@@ -56,42 +58,61 @@ class _DetailPageState extends ConsumerState<DetailPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: ValueListenableBuilder(
-          valueListenable: vm.dataList,
-          builder: (context, dataList, _) {
-            if (dataList.isEmpty) {
-              return Container();
-            }
-            return Consumer(
-              builder: (context, ref, child) {
-                final canScroll = ref.watch(detailProvider(widget.seriesId));
-                return PageView.builder(
-                  allowImplicitScrolling: true,
-                  controller: vm.pageController,
-                  physics: canScroll ? null : const NeverScrollableScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  itemCount: dataList.length,
-                  itemBuilder: (context, index) {
-                    final model = dataList[index];
-                    if (model is ItemModel) {
-                      return PlayItem(
-                        listController: detailVideoController,
-                        model: model,
-                        controlBuilder: (context, controller) {
-                          return VideoControlWidget(
-                            controller: controller,
-                          );
-                        },
-                      );
-                    } else {
-                      return AdItem(model: model);
+        body: Column(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.w), bottomRight: Radius.circular(10.w)),
+                child: ValueListenableBuilder(
+                  valueListenable: vm.dataList,
+                  builder: (context, dataList, _) {
+                    if (dataList.isEmpty) {
+                      return Container();
                     }
+                    return Consumer(
+                      builder: (context, ref, child) {
+                        final canScroll = ref.watch(detailProvider(widget.seriesId));
+                        return PageView.builder(
+                          allowImplicitScrolling: true,
+                          controller: vm.pageController,
+                          physics: canScroll ? null : const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemCount: dataList.length,
+                          itemBuilder: (context, index) {
+                            final model = dataList[index];
+                            if (model is ItemModel) {
+                              return PlayItem(
+                                listController: detailVideoController,
+                                model: model,
+                                controlBuilder: (context, controller) {
+                                  return VideoControlWidget(
+                                    controller: controller,
+                                  );
+                                },
+                              );
+                            } else {
+                              return AdItem(model: model);
+                            }
+                          },
+                          onPageChanged: vm.setCurrentVideoPlayerController,
+                        );
+                      },
+                    );
                   },
-                  onPageChanged: vm.setCurrentVideoPlayerController,
-                );
-              },
-            );
-          },
+                ),
+              ),
+            ),
+            Container(
+              child: Column(
+                children: [
+                  SizedBox(height: 50,),
+                  SizedBox(
+                    height: SafeSize.bottomBarHeight(),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

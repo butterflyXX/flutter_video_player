@@ -1,6 +1,7 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/home/home_data_provider.dart';
 import 'package:video_player/my_navigator_observer.dart';
@@ -33,29 +34,32 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
     return Scaffold(
       backgroundColor: Colors.black,
       body: ValueListenableBuilder(valueListenable: vm.dataList, builder: (context, dataList, _) {
-        return PageView.builder(
-          allowImplicitScrolling: true,
-          controller: vm.pageController,
-          scrollDirection: Axis.vertical,
-          itemCount: dataList.length,
-          itemBuilder: (context, index) {
-            final model = dataList[index];
-            return GestureDetector(
-              onTap: () {
-                vm.pushDetail(model.id, position: homeVideoController.currentController!.position.value);
-              },
-              child: PlayItem(
-                listController: homeVideoController,
-                model: model.episode,
-                controlBuilder: (context, controller) {
-                  return HomeVideoControlWidget(
-                    controller: controller,
-                  );
+        return ClipRRect(
+          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.w), bottomRight: Radius.circular(10.w)),
+          child: PageView.builder(
+            allowImplicitScrolling: true,
+            controller: vm.pageController,
+            scrollDirection: Axis.vertical,
+            itemCount: dataList.length,
+            itemBuilder: (context, index) {
+              final model = dataList[index];
+              return GestureDetector(
+                onTap: () {
+                  vm.pushDetail(model.id, position: homeVideoController.currentController!.position.value);
                 },
-              ),
-            );
-          },
-          onPageChanged: vm.setCurrentVideoPlayerController,
+                child: PlayItem(
+                  listController: homeVideoController,
+                  model: model.episode,
+                  controlBuilder: (context, controller) {
+                    return HomeVideoControlWidget(
+                      controller: controller,
+                    );
+                  },
+                ),
+              );
+            },
+            onPageChanged: vm.setCurrentVideoPlayerController,
+          ),
         );
       }),
     );

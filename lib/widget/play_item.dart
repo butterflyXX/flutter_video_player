@@ -5,6 +5,7 @@ import 'package:video_player/global.dart';
 import 'package:video_player/model/item_model.dart';
 import 'package:video_player/video_list_controller.dart';
 import 'package:video_player/video_player_controller.dart';
+import 'package:video_player/widget/video_player.dart';
 
 typedef ControlWidgetBuilder = Widget Function(BuildContext context, VideoPlayerController controller);
 
@@ -40,14 +41,12 @@ class _PlayItemState extends State<PlayItem> {
       builder: (context, aspectRatio, child) {
         return Stack(
           children: [
-            Center(
-              child: Image.network(widget.model.cover),
-            ),
+            Positioned.fill(child: Image.network(widget.model.cover, fit: BoxFit.cover,),),
             if (aspectRatio != 0)
               Center(
-                child: AspectRatio(
+                child: VideoPlayer(
                   aspectRatio: aspectRatio,
-                  child: TXPlayerVideo(controller: controller),
+                  controller: controller,
                 ),
               ),
             child!,
