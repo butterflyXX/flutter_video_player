@@ -59,107 +59,154 @@ class _DetailPageState extends ConsumerState<DetailPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: Column(
+        body: Stack(
           children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.w), bottomRight: Radius.circular(10.w)),
-                child: ValueListenableBuilder(
-                  valueListenable: vm.dataList,
-                  builder: (context, dataList, _) {
-                    if (dataList.isEmpty) {
-                      return Container();
-                    }
-                    return Consumer(
-                      builder: (context, ref, child) {
-                        final canScroll = ref.watch(detailProvider(widget.seriesId));
-                        return PageView.builder(
-                          allowImplicitScrolling: true,
-                          controller: vm.pageController,
-                          physics: canScroll ? null : const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemCount: dataList.length,
-                          itemBuilder: (context, index) {
-                            final model = dataList[index];
-                            if (model is ItemModel) {
-                              return PlayItem(
-                                listController: detailVideoController,
-                                model: model,
-                                controlBuilder: (context, controller) {
-                                  return VideoControlWidget(
-                                    controller: controller,
+            Column(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.w), bottomRight: Radius.circular(10.w)),
+                    child: ValueListenableBuilder(
+                      valueListenable: vm.dataList,
+                      builder: (context, dataList, _) {
+                        if (dataList.isEmpty) {
+                          return Container();
+                        }
+                        return Consumer(
+                          builder: (context, ref, child) {
+                            final canScroll = ref.watch(detailProvider(widget.seriesId));
+                            return PageView.builder(
+                              allowImplicitScrolling: true,
+                              controller: vm.pageController,
+                              physics: canScroll ? null : const NeverScrollableScrollPhysics(),
+                              scrollDirection: Axis.vertical,
+                              itemCount: dataList.length,
+                              itemBuilder: (context, index) {
+                                final model = dataList[index];
+                                if (model is ItemModel) {
+                                  return PlayItem(
+                                    listController: detailVideoController,
+                                    model: model,
+                                    controlBuilder: (context, controller) {
+                                      return VideoControlWidget(
+                                        controller: controller,
+                                      );
+                                    },
                                   );
-                                },
-                              );
-                            } else {
-                              return AdItem(model: model);
-                            }
+                                } else {
+                                  return AdItem(model: model);
+                                }
+                              },
+                              onPageChanged: vm.setCurrentVideoPlayerController,
+                            );
                           },
-                          onPageChanged: vm.setCurrentVideoPlayerController,
                         );
                       },
-                    );
-                  },
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 16.w),
-              height: 50 + SafeSize.bottomBarHeight(),
-              child: Column(
-                children: [
-                  Column(
+                Container(
+                  padding: EdgeInsets.only(left: 16.w),
+                  height: 50 + SafeSize.bottomBarHeight(),
+                  child: Column(
                     children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
+                      Column(
                         children: [
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: surface5,
-                                borderRadius: BorderRadius.circular(8.w),
-                              ),
-                              height: 40,
-                              alignment: Alignment.centerLeft,
-                              padding: EdgeInsets.symmetric(horizontal: 10.w),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      '选集·全${vm.dataList.value.length}集·永久免费',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.keyboard_arrow_up_rounded,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ),
-                            ),
+                          const SizedBox(
+                            height: 10,
                           ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.content_copy_rounded,
-                              color: Colors.white,
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: surface5,
+                                    borderRadius: BorderRadius.circular(8.w),
+                                  ),
+                                  height: 40,
+                                  alignment: Alignment.centerLeft,
+                                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          '选集·全${vm.dataList.value.length}集·永久免费',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.keyboard_arrow_up_rounded,
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.content_copy_rounded,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
+                      )
                     ],
-                  )
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
+            appbar(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget appbar() {
+    return Padding(
+      padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
+      child: Row(
+        children: [
+          (ModalRoute.of(context)?.canPop ?? false)
+              ? IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: color,
+            ),
+          )
+              : const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: ValueListenableBuilder(
+              valueListenable: vm.current,
+              builder: (context, current, _) {
+                return Text(
+                  (current as ItemModel?)?.name ?? '',
+                  style: const TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.w500),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                );
+              }
+            ),
+          ),
+          IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.more_vert,
+                color: color,
+              )),
+        ],
       ),
     );
   }

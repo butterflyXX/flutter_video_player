@@ -14,7 +14,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
   final dataList = ValueNotifier([]);
   PageController? pageController;
   late String seriesId;
-  dynamic _current;
+  final current = ValueNotifier<dynamic>(null);
 
   int firstSeriesMaxIndex = 0;
   @override
@@ -88,8 +88,8 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
 
   Future<void> setCurrentVideoPlayerController(int index) async {
     final item = dataList.value[index];
-    final last = _current;
-    _current = item;
+    final last = current.value;
+    current.value = item;
     if (item is ItemModel) {
       final current = detailVideoController.getController(item.videoUrl);
       if (last is ItemModel && (last.seriesId == seriesId && item.seriesId != seriesId)) {
@@ -108,7 +108,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
   }
 
   bool isInitSeries() {
-    final currentIndex = dataList.value.indexOf(_current);
+    final currentIndex = dataList.value.indexOf(current);
     if (currentIndex < firstSeriesMaxIndex) {
       return true;
     }

@@ -50,48 +50,10 @@ class _PlayItemState extends State<PlayItem> {
                 ),
               ),
             child!,
-            appbar(),
           ],
         );
       },
       child: widget.controlBuilder(context, controller),
-    );
-  }
-
-  Widget appbar() {
-    return Padding(
-      padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
-      child: Row(
-        children: [
-          (ModalRoute.of(context)?.canPop ?? false)
-              ? IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: color,
-                  ),
-                )
-              : const SizedBox(
-                  width: 10,
-                ),
-          Expanded(
-            child: Text(
-              widget.model.name,
-              style: const TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.w500),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.more_vert,
-                color: color,
-              )),
-        ],
-      ),
     );
   }
 }
