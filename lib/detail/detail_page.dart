@@ -10,6 +10,7 @@ import 'package:video_player/util/color.dart';
 import 'package:video_player/util/safe_size.dart';
 import 'package:video_player/widget/ad_item.dart';
 import 'package:video_player/widget/play_item.dart';
+import 'package:video_player/widget/speed_dialog.dart';
 import 'package:video_player/widget/video_control_widget.dart';
 
 const detailPageRoute = '/detailPageRoute';
@@ -105,61 +106,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                     ),
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.only(left: 16.w),
-                  height: 50 + SafeSize.bottomBarHeight(),
-                  child: Column(
-                    children: [
-                      Column(
-                        children: [
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: surface5,
-                                    borderRadius: BorderRadius.circular(8.w),
-                                  ),
-                                  height: 40,
-                                  alignment: Alignment.centerLeft,
-                                  padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          '选集·全${vm.dataList.value.length}集·永久免费',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ),
-                                      Icon(
-                                        Icons.keyboard_arrow_up_rounded,
-                                        color: Colors.white,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.content_copy_rounded,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
+                bottomWidget(),
               ],
             ),
             appbar(),
@@ -169,45 +116,152 @@ class _DetailPageState extends ConsumerState<DetailPage> {
     );
   }
 
-  Widget appbar() {
-    return Padding(
-      padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
-      child: Row(
+  Widget bottomWidget() {
+    return Container(
+      padding: EdgeInsets.only(left: 16.w),
+      height: 50 + SafeSize.bottomBarHeight(),
+      child: Column(
         children: [
-          (ModalRoute.of(context)?.canPop ?? false)
-              ? IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: color,
-            ),
+          Column(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: surface5,
+                        borderRadius: BorderRadius.circular(8.w),
+                      ),
+                      height: 40,
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '选集·全${vm.dataList.value.length}集·永久免费',
+                              style: const TextStyle(
+                                color: color,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.keyboard_arrow_up_rounded,
+                            color: color,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.content_copy_rounded,
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           )
-              : const SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            child: ValueListenableBuilder(
-              valueListenable: vm.current,
-              builder: (context, current, _) {
-                return Text(
-                  (current as ItemModel?)?.name ?? '',
+        ],
+      ),
+    );
+  }
+
+  Widget appbar() {
+    return ValueListenableBuilder(
+      valueListenable: vm.current,
+      builder: (context, current, _) {
+        return Padding(
+          padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
+          child: Row(
+            children: [
+              (ModalRoute.of(context)?.canPop ?? false)
+                  ? IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: color,
+                      ),
+                    )
+                  : const SizedBox(
+                      width: 10,
+                    ),
+              Expanded(
+                child: Text(
+                  current is ItemModel ? '第${current.index}集' : '',
                   style: const TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.w500),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                );
-              }
-            ),
+                ),
+              ),
+              Opacity(
+                opacity: current is ItemModel ? 1 : 0,
+                child: IconButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        const speeds = <double>[0.25, 0.5, 1, 1.5, 2, 2.5, 3];
+                        return SpeedDialog(
+                          source: speeds,
+                          selected: detailVideoController.speed.value,
+                          onTap: (index) {
+                            detailVideoController.setSpeed(speeds[index]);
+                          },
+                        );
+                      },
+                    );
+                  },
+                  icon: Row(
+                    children: [
+                      Icon(
+                        Icons.speed,
+                        color: color,
+                      ),
+                      Text(
+                        '倍速',
+                        style: TextStyle(color: color),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Opacity(
+                opacity: current is ItemModel ? 1 : 0,
+                child: IconButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return SpeedDialog(
+                          source: detailVideoController.bitrateList.map((item) => '${item.height}P').toList(),
+                          selected: '${detailVideoController.currentBitrate.value?.height.toString()}P',
+                          onTap: (index) {
+                            detailVideoController.setBitrateIndex(detailVideoController.bitrateList[index]);
+                          },
+                        );
+                      },
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.more_vert,
+                    color: color,
+                  ),
+                ),
+              ),
+            ],
           ),
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.more_vert,
-                color: color,
-              )),
-        ],
-      ),
+        );
+      },
     );
   }
 }
