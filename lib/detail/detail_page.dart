@@ -6,6 +6,7 @@ import 'package:video_player/detail/detail_data_provider.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/model/item_model.dart';
 import 'package:video_player/provider/detail_provider.dart';
+import 'package:video_player/util/color.dart';
 import 'package:video_player/util/safe_size.dart';
 import 'package:video_player/widget/ad_item.dart';
 import 'package:video_player/widget/play_item.dart';
@@ -103,12 +104,57 @@ class _DetailPageState extends ConsumerState<DetailPage> {
               ),
             ),
             Container(
+              padding: EdgeInsets.only(left: 16.w),
+              height: 50 + SafeSize.bottomBarHeight(),
               child: Column(
                 children: [
-                  SizedBox(height: 50,),
-                  SizedBox(
-                    height: SafeSize.bottomBarHeight(),
-                  ),
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: surface5,
+                                borderRadius: BorderRadius.circular(8.w),
+                              ),
+                              height: 40,
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.symmetric(horizontal: 10.w),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '选集·全${vm.dataList.value.length}集·永久免费',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.keyboard_arrow_up_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.content_copy_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
