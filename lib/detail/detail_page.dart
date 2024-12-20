@@ -152,7 +152,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                               valueListenable: vm.currentSeries,
                               builder: (context, currentSeries, _) {
                                 return Text(
-                                  '选集·全${currentSeries?.episodeList.length ?? 0}集·永久免费',
+                                  '选集·全${currentSeries?.episodeCount ?? 0}集·永久免费',
                                   style: const TextStyle(
                                     color: color,
                                     fontSize: 14,

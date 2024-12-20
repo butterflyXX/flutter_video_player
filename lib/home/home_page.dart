@@ -43,19 +43,18 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
             itemCount: dataList.length,
             itemBuilder: (context, index) {
               final model = dataList[index];
-              return GestureDetector(
-                onTap: () {
-                  vm.pushDetail(model.id, position: homeVideoController.currentController!.position.value);
+              return PlayItem(
+                listController: homeVideoController,
+                model: model.episode,
+                controlBuilder: (context, controller) {
+                  return HomeVideoControlWidget(
+                    controller: controller,
+                    seriesModel: model,
+                    onTap: () {
+                      vm.pushDetail(model.id, position: homeVideoController.currentController!.position.value);
+                    },
+                  );
                 },
-                child: PlayItem(
-                  listController: homeVideoController,
-                  model: model.episode,
-                  controlBuilder: (context, controller) {
-                    return HomeVideoControlWidget(
-                      controller: controller,
-                    );
-                  },
-                ),
               );
             },
             onPageChanged: vm.setCurrentVideoPlayerController,

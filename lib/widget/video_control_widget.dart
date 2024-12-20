@@ -11,6 +11,8 @@ import 'package:video_player/util/color.dart';
 import 'package:video_player/util/safe_size.dart';
 import 'package:video_player/video_player_controller.dart';
 import 'package:video_player/widget/button/column_button.dart';
+import 'package:video_player/widget/button/interaction_button.dart';
+import 'package:video_player/widget/interaction_widget.dart';
 import 'package:video_player/widget/progress_bar.dart';
 import 'package:video_player/widget/speed_dialog.dart';
 
@@ -119,10 +121,17 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                       ),
                       SizedBox(width: 8.w),
                       Flexible(
-                          child: Text(
-                        widget.model.name,
-                        style: TextStyle(color: color, fontWeight: FontWeight.w500, fontSize: 18.sp),
-                      )),
+                        child: Text(
+                          widget.model.name,
+                          style: TextStyle(
+                            color: color,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18.sp,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                       Icon(
                         Icons.chevron_right,
                         color: color,
@@ -140,39 +149,12 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
               ),
             ),
             SizedBox(width: 20.w),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _interactionWidget(Icons.star_purple500_sharp, '追剧'),
-                SizedBox(height: 20.w),
-                _interactionWidget(Icons.chat, '174'),
-                SizedBox(height: 20.w),
-                _interactionWidget(Icons.favorite, '7828'),
-                SizedBox(height: 30.w),
-              ],
-            )
+            Padding(
+              padding: EdgeInsets.only(bottom: 30.w),
+              child: const InteractionWidget(),
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _interactionWidget(IconData icon, String title) {
-    return SizedBox(
-      width: 60.w,
-      child: ColumnButton(
-        top: Icon(
-          icon,
-          color: color,
-          size: 30,
-        ),
-        bottom: Text(
-          title,
-          style: const TextStyle(color: color),
-        ),
-        onTap: () {
-          print('123');
-        },
       ),
     );
   }
