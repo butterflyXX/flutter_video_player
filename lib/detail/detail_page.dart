@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:video_player/detail/detail_data_provider.dart';
+import 'package:video_player/gen/assets.gen.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/model/item_model.dart';
 import 'package:video_player/provider/detail_provider.dart';
@@ -167,9 +168,10 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: const Icon(
-                      Icons.content_copy_rounded,
-                      color: color,
+                    icon: Assets.svg.expandContent.svg(
+                      width: 28,
+                      fit: BoxFit.cover,
+                      colorFilter: const ColorFilter.mode(color, BlendMode.srcIn),
                     ),
                   ),
                 ],

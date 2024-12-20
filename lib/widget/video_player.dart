@@ -19,16 +19,21 @@ class VideoPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, cons) {
       return ClipRect(
-        child: SizedBox(
-          height: cons.maxHeight,
-          width: cons.maxWidth,
-          child: FittedBox(
-            fit: fit,
-            child: SizedBox(
-              height: cons.maxHeight,
-              child: AspectRatio(
-                aspectRatio: aspectRatio,
-                child: TXPlayerVideo(controller: controller),
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.black,
+          child: SizedBox(
+            height: cons.maxHeight,
+            width: cons.maxWidth,
+            child: FittedBox(
+              fit: fit,
+              child: SizedBox(
+                height: cons.maxHeight,
+                child: AspectRatio(
+                  aspectRatio: aspectRatio,
+                  child: TXPlayerVideo(controller: controller),
+                ),
               ),
             ),
           ),
