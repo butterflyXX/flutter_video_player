@@ -81,6 +81,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                       itemCount: dataList.length,
                       itemBuilder: (context, index) {
                         final model = dataList[index];
+                        final series = vm.currentSeries.value;
                         Widget child;
                         if (model is ItemModel) {
                           child = PlayItem(
@@ -88,6 +89,8 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                             model: model,
                             controlBuilder: (context, controller) {
                               return VideoControlWidget(
+                                model: model,
+                                seriesModel: series!,
                                 controller: controller,
                               );
                             },
