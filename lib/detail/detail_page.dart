@@ -6,6 +6,7 @@ import 'package:video_player/detail/detail_data_provider.dart';
 import 'package:video_player/gen/assets.gen.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/model/item_model.dart';
+import 'package:video_player/provider/clear_screen_provider.dart';
 import 'package:video_player/provider/detail_provider.dart';
 import 'package:video_player/util/color.dart';
 import 'package:video_player/util/safe_size.dart';
@@ -167,11 +168,27 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
-                    icon: Assets.svg.expandContent.svg(
-                      width: 28,
-                      fit: BoxFit.cover,
-                      colorFilter: const ColorFilter.mode(color, BlendMode.srcIn),
+                    onPressed: () {
+                      ref.read(clearScreenProvider.notifier).state = !ref.read(clearScreenProvider.notifier).state;
+                    },
+                    icon: Consumer(
+                      builder: (context, ref, _) {
+                        var svg = Assets.svg.expandContent;
+                        final isClear = ref.watch(clearScreenProvider);
+                        if (isClear) {
+                          svg = Assets.svg.collapseContent;
+                        }
+
+                        return AnimatedSwitcher(
+                          duration: Durations.medium1,
+                          child: svg.svg(
+                            key: UniqueKey(),
+                            width: 28,
+                            fit: BoxFit.cover,
+                            colorFilter: const ColorFilter.mode(color, BlendMode.srcIn),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
