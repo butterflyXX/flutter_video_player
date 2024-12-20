@@ -129,8 +129,9 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 4.w),
                   Text(
-                    widget.seriesModel.desc,
+                    '第${widget.model.index}集 | ${widget.seriesModel.desc}',
                     style: TextStyle(color: color),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
