@@ -178,7 +178,6 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                         if (isClear) {
                           svg = Assets.svg.collapseContent;
                         }
-
                         return AnimatedSwitcher(
                           duration: Durations.medium1,
                           child: svg.svg(
