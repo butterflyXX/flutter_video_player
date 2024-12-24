@@ -26,7 +26,6 @@ class VideoPlayerController extends TXVodPlayerController {
   StreamSubscription? _statusSubscription;
   StreamSubscription? _netStatusSubscription;
 
-
   @override
   Future<void> initialize({bool? onlyAudio}) async {
     await super.initialize(onlyAudio: onlyAudio);
@@ -47,6 +46,7 @@ class VideoPlayerController extends TXVodPlayerController {
     initialize().then((_) async {
       // setLoop(true);
       setAutoPlay(isAutoPlay: false);
+      setStartTime(position.value);
       startVodPlay(url);
       groupController.currentBitrate.value?.let((it) {
         setBitrateIndex(it.index);
@@ -57,7 +57,9 @@ class VideoPlayerController extends TXVodPlayerController {
   VideoPlayerController({
     required this.groupController,
     required this.url,
+    double? startPosition,
   }) {
+    position.value = startPosition ?? 0;
     _inflateController();
     _eventSubscription = onPlayerEventBroadcast.listen((event) async {
       if (event["event"] == TXVodPlayEvent.PLAY_EVT_VOD_PLAY_PREPARED) {
@@ -99,9 +101,7 @@ class VideoPlayerController extends TXVodPlayerController {
       }
     });
 
-    _statusSubscription = onPlayerState.listen((event) async {
-
-    });
+    _statusSubscription = onPlayerState.listen((event) async {});
 
     _netStatusSubscription = onPlayerNetStatusBroadcast.listen((event) async {
       double w = (event["VIDEO_WIDTH"]).toDouble();

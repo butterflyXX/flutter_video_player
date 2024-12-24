@@ -18,6 +18,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
   final current = ValueNotifier<dynamic>(null);
   final seriesModels = <SeriesModel>[];
   final currentSeries = ValueNotifier<SeriesModel?>(null);
+  final showPlaceholderImage = ValueNotifier(false);
 
   int firstSeriesMaxIndex = 0;
   @override
@@ -47,7 +48,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
 
   /// 模拟请求剧
   Future<void> load({double? position}) async {
-    await Future.delayed(Durations.short1);
+    await Future.delayed(Durations.long4);
     final model = data.firstWhere((item) => item.id == seriesId);
     seriesModels.add(model);
     final newData = [];
@@ -65,10 +66,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
     firstSeriesMaxIndex = newData.length;
     dataList.value = newData;
     pageController = PageController(initialPage: index);
-    await setCurrentVideoPlayerController(index);
-    if (position != null) {
-      await detailVideoController.currentController?.seek(position);
-    }
+    await setCurrentVideoPlayerController(index, position: position);
   }
 
   Future<void> loadNext() async {
@@ -91,7 +89,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
     dataList.value = dataList.value + nextData;
   }
 
-  Future<void> setCurrentVideoPlayerController(int index) async {
+  Future<void> setCurrentVideoPlayerController(int index, {double? position}) async {
     final item = dataList.value[index];
     final last = current.value;
     current.value = item;
@@ -99,7 +97,7 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
       currentSeries.value = getCurrentSeries(item.seriesId);
     }
     if (item is ItemModel) {
-      final current = detailVideoController.getController(item.videoUrl);
+      final current = detailVideoController.getController(item.videoUrl, position: position);
       if (last is ItemModel && (last.seriesId == seriesId && item.seriesId != seriesId)) {
         //开始播放下一部剧,同步上一部剧播放进度
         homeVideoController.currentController?.seek(detailVideoController.currentController!.position.value);

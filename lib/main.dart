@@ -5,15 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_player/super_player.dart';
 import 'package:video_player/global.dart';
 import 'package:video_player/home/home_page.dart';
-import 'package:video_player/my_navigator_observer.dart';
 import 'package:video_player/provider/audio_session_provider.dart';
 import 'package:video_player/util/safe_size.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
-  String licenceURL = "https://license.vod2.myqcloud.com/license/v2/1311477396_1/v_cube.license"; // 获取到的 licence url
-  String licenceKey = "616d85285280f69e09ccd76bb05f2394"; // 获取到的 licence key
+  String licenceURL = "https://license.vod2.myqcloud.com/license/v2/1330807398_1/v_cube.license";
+  String licenceKey = "d6a0b11c9e8ff3ec97a8fccef72b5df4";
   await SuperPlayerPlugin.setGlobalLicense(licenceURL, licenceKey);
   SuperPlayerPlugin.setLogLevel(6);
   SuperPlayerPlugin.setConsoleEnabled(false);
@@ -55,6 +54,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: const HomePage(),
+      backgroundColor: Colors.black,
       bottomNavigationBar: Container(
         color: Colors.black,
         child: Column(

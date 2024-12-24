@@ -114,7 +114,7 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                           height: 25.w,
                           width: 20.w,
                           child: Image.network(
-                            widget.model.cover,
+                            widget.seriesModel.cover,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -132,7 +132,7 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Icon(
+                      const Icon(
                         Icons.chevron_right,
                         color: color,
                       ),

@@ -32,9 +32,9 @@ class VideoListController {
     }
   }
 
-  VideoPlayerController getController(String url) {
+  VideoPlayerController getController(String url,{double? position}) {
     if (_controllers[url] == null) {
-      final controller = VideoPlayerController(groupController: this, url: url);
+      final controller = VideoPlayerController(groupController: this, url: url, startPosition: position);
       _controllers[url] = controller;
       TXVodDownloadController.instance.startPreLoad(url, 3, -1,
           onCompleteListener:(int taskId,String url) {
