@@ -45,19 +45,20 @@ class _VideoControlWidgetState extends State<VideoControlWidget> {
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
-                      if (controller.playState == TXPlayerState.paused) {
+                      if (snapshot.data == TXPlayerState.paused) {
                         controller.groupController.resume();
                       } else {
                         controller.groupController.pause();
                       }
                     },
-                    child: controller.playState == TXPlayerState.paused
-                        ? const Icon(
-                            Icons.play_arrow_rounded,
-                            size: 60,
-                            color: color,
-                          )
-                        : Container(),
+                    child: Opacity(
+                      opacity: snapshot.data == TXPlayerState.paused ? 1 : 0,
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        size: 60,
+                        color: color,
+                      ),
+                    ),
                   );
                 },
               ),

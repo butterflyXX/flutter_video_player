@@ -101,8 +101,7 @@ class VideoPlayerController extends TXVodPlayerController {
       }
     });
 
-    _statusSubscription = onPlayerState.listen((event) async {
-    });
+    _statusSubscription = onPlayerState.listen((event) async {});
 
     _netStatusSubscription = onPlayerNetStatusBroadcast.listen((event) async {
       double w = (event["VIDEO_WIDTH"]).toDouble();
