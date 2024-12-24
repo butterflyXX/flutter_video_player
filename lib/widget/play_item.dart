@@ -13,11 +13,13 @@ class PlayItem extends StatefulWidget {
   final ItemModel model;
   final VideoListController listController;
   final ControlWidgetBuilder controlBuilder;
+  final ControlWidgetBuilder placeholderBuilder;
 
   const PlayItem({
     required this.model,
     required this.listController,
     required this.controlBuilder,
+    required this.placeholderBuilder,
     super.key,
   });
 
@@ -41,7 +43,7 @@ class _PlayItemState extends State<PlayItem> {
       builder: (context, aspectRatio, child) {
         return Stack(
           children: [
-            Positioned.fill(child: Image.network(widget.model.cover, fit: BoxFit.cover,),),
+            Positioned.fill(child: widget.placeholderBuilder(context, controller),),
             if (aspectRatio != 0)
               Center(
                 child: VideoPlayer(

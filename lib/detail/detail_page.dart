@@ -87,6 +87,21 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                           child = PlayItem(
                             listController: detailVideoController,
                             model: model,
+                            placeholderBuilder: (_, __) {
+                              return ValueListenableBuilder(
+                                valueListenable: vm.showPlaceholderImage,
+                                builder: (context, show, child) {
+                                  return Opacity(
+                                    opacity: show ? 1 : 0,
+                                    child: child!,
+                                  );
+                                },
+                                child: Image.network(
+                                  model.cover,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
                             controlBuilder: (context, controller) {
                               return VideoControlWidget(
                                 model: model,

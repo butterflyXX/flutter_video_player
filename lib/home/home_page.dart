@@ -46,6 +46,7 @@ class _HomePageState extends ConsumerState<HomePage> with TGRouteAware {
               return PlayItem(
                 listController: homeVideoController,
                 model: model.episode,
+                placeholderBuilder: (_, __) => Image.network(model.episode.cover, fit: BoxFit.cover,),
                 controlBuilder: (context, controller) {
                   return HomeVideoControlWidget(
                     controller: controller,

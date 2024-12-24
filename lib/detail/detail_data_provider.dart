@@ -49,6 +49,9 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
   /// 模拟请求剧
   Future<void> load({double? position}) async {
     await Future.delayed(Durations.long4);
+    Future.delayed(Durations.medium1).then((_) {
+      showPlaceholderImage.value = true;
+    });
     final model = data.firstWhere((item) => item.id == seriesId);
     seriesModels.add(model);
     final newData = [];
