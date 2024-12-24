@@ -73,6 +73,7 @@ class VideoPlayerController extends TXVodPlayerController {
           bitrateList?.let((list) {
             for (var item in list) {
               groupController.bitrateList.add(BitrateModel.fromJson(Map<String, dynamic>.from(item)));
+              groupController.bitrateList.sort((a, b) => a.height > b.height ? -1 : 1);
             }
           });
         });
