@@ -19,8 +19,8 @@ class VideoPlayerController extends TXVodPlayerController {
 
   double duration = 0;
   final position = ValueNotifier<double>(0);
-  double _height = 0;
-  double _width = 0;
+  double height = 0;
+  double width = 0;
 
   StreamSubscription? _eventSubscription;
   StreamSubscription? _statusSubscription;
@@ -81,11 +81,10 @@ class VideoPlayerController extends TXVodPlayerController {
 
       if (event["event"] == TXVodPlayEvent.PLAY_EVT_CHANGE_RESOLUTION) {
         //分辨率获取,获取完分辨率展示播放器UI
-        _width = (event["EVT_PARAM1"]).toDouble();
-        _height = (event["EVT_PARAM2"]).toDouble();
-        final currentBitrate = groupController.bitrateList.firstWhereOrNull((item) => (item.height == _height && item.width == _width));
-        groupController.currentBitrate.value = currentBitrate;
+        width = (event["EVT_PARAM1"]).toDouble();
+        height = (event["EVT_PARAM2"]).toDouble();
         setRate(groupController.speed.value);
+        if (playState == TXPlayerState.playing) resume();
       }
 
       if (event["event"] == TXVodPlayEvent.PLAY_EVT_PLAY_PROGRESS) {
@@ -102,7 +101,8 @@ class VideoPlayerController extends TXVodPlayerController {
       }
     });
 
-    _statusSubscription = onPlayerState.listen((event) async {});
+    _statusSubscription = onPlayerState.listen((event) async {
+    });
 
     _netStatusSubscription = onPlayerNetStatusBroadcast.listen((event) async {
       double w = (event["VIDEO_WIDTH"]).toDouble();

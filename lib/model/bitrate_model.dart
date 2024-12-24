@@ -1,8 +1,12 @@
+import 'dart:math';
+
 class BitrateModel {
   int index;
   int width;
   int height;
   int bitrate;
+
+  int get resolution => max(width, height);
 
   // Constructor
   BitrateModel({

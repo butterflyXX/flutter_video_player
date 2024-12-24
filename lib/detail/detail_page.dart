@@ -11,6 +11,7 @@ import 'package:video_player/provider/detail_provider.dart';
 import 'package:video_player/util/color.dart';
 import 'package:video_player/util/safe_size.dart';
 import 'package:video_player/widget/ad_item.dart';
+import 'package:video_player/widget/bitrate_select_widget.dart';
 import 'package:video_player/widget/play_item.dart';
 import 'package:video_player/widget/speed_dialog.dart';
 import 'package:video_player/widget/video_control_widget.dart';
@@ -264,7 +265,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                       },
                     );
                   },
-                  icon: Row(
+                  icon: const Row(
                     children: [
                       Icon(
                         Icons.speed,
@@ -281,17 +282,11 @@ class _DetailPageState extends ConsumerState<DetailPage> {
               Opacity(
                 opacity: current is ItemModel ? 1 : 0,
                 child: IconButton(
-                  onPressed: () {
+                  onPressed: () async {
                     showModalBottomSheet(
                       context: context,
                       builder: (context) {
-                        return SpeedDialog(
-                          source: detailVideoController.bitrateList.map((item) => '${item.height}P').toList(),
-                          selected: '${detailVideoController.currentBitrate.value?.height.toString()}P',
-                          onTap: (index) {
-                            detailVideoController.setBitrateIndex(detailVideoController.bitrateList[index]);
-                          },
-                        );
+                        return BitrateSelectWidget(controller: detailVideoController,);
                       },
                     );
                   },

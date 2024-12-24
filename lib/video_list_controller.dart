@@ -97,13 +97,13 @@ class VideoListController {
     }
   }
 
-  setBitrateIndex(BitrateModel bitrate) {
+  setBitrateIndex({BitrateModel? bitrate}) {
     currentBitrate.value = bitrate;
-    bitrateList.firstWhereOrNull((it) => (it.height == bitrate.height && it.width == bitrate.width))?.index.let((index) {
-      for (final controller in _controllers.values) {
-        controller.setBitrateIndex(index);
-      }
-    });
+    int index = -1;
+    if (bitrate != null) index = bitrate.index;
+    for (final controller in _controllers.values) {
+      controller.setBitrateIndex(index);
+    }
   }
 
   playStart() {
