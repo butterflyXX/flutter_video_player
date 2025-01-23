@@ -55,10 +55,10 @@ class _DetailPageState extends ConsumerState<DetailPage> {
       onPopInvoked: (canPop) {
         detailVideoController.currentController?.let((it) async {
           readProvider(currentControllerProvider.notifier).setState(homeVideoController.currentController);
-          if (vm.isInitSeries()) {
-            await it.position.value.let((position) async => await homeVideoController.seek(position));
-          }
           homeVideoController.resume();
+          if (vm.isInitSeries()) {
+            await it.position.value?.let((position) async => await homeVideoController.seek(position));
+          }
         });
       },
       child: Scaffold(

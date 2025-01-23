@@ -18,7 +18,7 @@ class VideoPlayerController extends TXVodPlayerController {
   final _initializeCompleter = Completer();
 
   double duration = 0;
-  final position = ValueNotifier<double>(0);
+  final position = ValueNotifier<double?>(null);
   double height = 0;
   double width = 0;
 
@@ -44,9 +44,10 @@ class VideoPlayerController extends TXVodPlayerController {
     playConfig.smoothSwitchBitrate = true;
     setConfig(playConfig);
     initialize().then((_) async {
-      // setLoop(true);
       setAutoPlay(isAutoPlay: false);
-      setStartTime(position.value);
+      if (position.value != null) {
+        setStartTime(position.value!);
+      }
       startVodPlay(url);
       groupController.currentBitrate.value?.let((it) {
         setBitrateIndex(it.index);
@@ -59,7 +60,7 @@ class VideoPlayerController extends TXVodPlayerController {
     required this.url,
     double? startPosition,
   }) {
-    position.value = startPosition ?? 0;
+    position.value = startPosition;
     _inflateController();
     _eventSubscription = onPlayerEventBroadcast.listen((event) async {
       if (event["event"] == TXVodPlayEvent.PLAY_EVT_VOD_PLAY_PREPARED) {

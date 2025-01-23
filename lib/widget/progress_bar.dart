@@ -18,7 +18,7 @@ class ProgressBar extends StatefulWidget {
 
 class _ProgressBarState extends State<ProgressBar> {
 
-  final _targetValue = ValueNotifier<double>(0);
+  final _targetValue = ValueNotifier<double?>(null);
   int _task = 0;
 
   double? _offset;
@@ -38,7 +38,7 @@ class _ProgressBarState extends State<ProgressBar> {
     double ratio = 0;
     final duration = widget.controller.duration;
     if (duration != 0) {
-      ratio = widget.controller.position.value / duration;
+      ratio = (widget.controller.position.value ?? 0) / duration;
     }
     if (ratio < 0) {
       ratio = 0;
@@ -64,6 +64,7 @@ class _ProgressBarState extends State<ProgressBar> {
             if (canPlay) ValueListenableBuilder(
               valueListenable: _targetValue,
               builder: (context, value, _) {
+                if (value ==null) return Container();
                 return SliderTheme(
                   data: SliderThemeData(
                     activeTrackColor: color,

@@ -102,7 +102,9 @@ class DetailDataProviderNotifier extends AutoDisposeNotifier<bool> {
       final current = detailVideoController.getController(item.videoUrl, position: position);
       if (last is ItemModel && (last.seriesId == seriesId && item.seriesId != seriesId)) {
         //开始播放下一部剧,同步上一部剧播放进度
-        homeVideoController.currentController?.seek(detailVideoController.currentController!.position.value);
+        detailVideoController.currentController!.position.value?.let((it) {
+          homeVideoController.currentController?.seek(it);
+        });
       }
       await detailVideoController.setCurrentVideoPlayerController(controller: current);
       ref.read(homeDataProvider.notifier).updateCurrentData(item);
